@@ -1,6 +1,3 @@
-# Ignore game folder. All the task assume the game is in the root of the project in a folder called 'factorio'
-factorio/
-
 # Created by https://www.gitignore.io/api/python,pycharm
 
 ### PyCharm ###

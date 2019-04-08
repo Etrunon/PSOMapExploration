@@ -1,5 +1,6 @@
-from skimage import io
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from numpy.core.multiarray import ndarray
 from skimage import io
 from skimage.color import rgb2gray
 from skimage.feature import blob_log
@@ -27,6 +28,8 @@ titles = ['Laplacian of Gaussian', 'Difference of Gaussian',
 		  'Determinant of Hessian']
 sequence = zip(blobs_list, colors, titles)
 
+fig: Figure
+axes: ndarray
 fig, axes = plt.subplots(1, 3, figsize=(9, 3), sharex=True, sharey=True)
 ax = axes.ravel()
 

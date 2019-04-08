@@ -7,7 +7,7 @@ from skimage.measure import label, regionprops
 from skimage.morphology import closing, square
 from skimage.segmentation import clear_border
 
-original = io.imread('maps/map5.png')
+original = io.imread('../data/examples/map5.png')
 grayscale = rgb2gray(original)
 
 thresh = threshold_otsu(grayscale)

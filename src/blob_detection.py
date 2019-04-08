@@ -1,11 +1,10 @@
-from math import sqrt
 from skimage import io
-from skimage.feature import blob_dog, blob_log, blob_doh
-from skimage.color import rgb2gray
-
 import matplotlib.pyplot as plt
+from skimage import io
+from skimage.color import rgb2gray
+from skimage.feature import blob_log
 
-image = io.imread('maps/map5.png')
+image = io.imread('../data/examples/map5.png')
 image_gray = rgb2gray(image)
 
 blobs_log = blob_log(image_gray, max_sigma=30, num_sigma=10, threshold=.05)

@@ -37,8 +37,8 @@ out/
 # Editor-based Rest Client
 .idea/httpRequests
 
-*.iml
-modules.xml
+# *.iml
+# modules.xml
 .idea/misc.xml
 # *.ipr
 

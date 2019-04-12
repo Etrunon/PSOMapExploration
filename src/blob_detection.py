@@ -6,6 +6,7 @@ from skimage.color import rgb2gray
 from skimage.feature import blob_log
 import sys
 
+# Load image
 image_path = sys.argv[1]
 image = io.imread(image_path)
 image_gray = rgb2gray(image)
@@ -24,8 +25,7 @@ print(blobs_log)
 # blobs_list = [blobs_log, blobs_dog, blobs_doh]
 blobs_list = [blobs_log]
 colors = ['yellow', 'lime', 'red']
-titles = ['Laplacian of Gaussian', 'Difference of Gaussian',
-		  'Determinant of Hessian']
+titles = ['Laplacian of Gaussian', 'Difference of Gaussian', 'Determinant of Hessian']
 sequence = zip(blobs_list, colors, titles)
 
 fig: Figure

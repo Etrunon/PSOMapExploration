@@ -1,3 +1,4 @@
+from PIL import Image
 from numpy.core.multiarray import ndarray
 from matplotlib.figure import Figure
 from skimage import io
@@ -5,54 +6,69 @@ from skimage.feature import blob_log
 import sys
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import numpy
+import numpy as np
 
 # This script controls the detection of all different resources: coal, iron, copper and uranium
 # Foreach of these create a new image with everything black and only the relevant resource spots white (to ease the job
 #        of blob_detection). Then it runs blob_detection and save the result on a new matrix
+resources = [
+	"coal",
+	"iron",
+	"copper",
+	"stone",
+	"uranium",
+]
 
-resources = {
+resourceColours = {
 	"coal": [0, 0, 0],
-	"iron": [104, 132, 146]
+	"iron": [104, 132, 146],
+	"copper": [203, 97, 53],
+	"stone": [174, 154, 107],
+	"uranium": [0, 177, 0]
 }
 
 
-def highlight_resource(image, resName):
-	result = numpy.zeros((row, col))
-	searching = resources[resName]
+def highlight_resource(res_matrix, image, resName, on_map):
+	searching = resourceColours[resName]
 	# Scan the image looking for the color
 	for i in range(0, row):
 		for j in range(0, col):
-			pixel = img[i][j]
-			if pixel[0] == searching[0] and  pixel[1] == searching[1] and  pixel[2] == searching[2]:
-				result[i][j] = 1.0
-				result[i][j] = 1.0
-				result[i][j] = 1.0
-
-	imgPlot = plt.imshow(result)
-	plt.show()
+			pixel = image[i][j]
+			if pixel[0] == searching[0] and pixel[1] == searching[1] and pixel[2] == searching[2]:
+				res_matrix[i][j] = on_map
+				res_matrix[i][j] = on_map
+				res_matrix[i][j] = on_map
 
 	return result
 
 
 # Load the image
 image_name = sys.argv[1]
-img = mpimg.imread("data/examples/" + image_name)
-row = len(img)
-col = len(img[0])
+img = Image.open("data/examples/" + image_name)
+img_array = np.asarray(img, dtype="int32")
+row = len(img_array)
+col = len(img_array[0])
 
-result = highlight_resource(img, "iron")
-print("Finito il preprocessing")
+# Find all resources and put them on the matrix
+result = np.zeros((row, col))
+for i in range(0, len(resources)):
+	highlight_resource(result, img_array, resources[i], i+1)
+	print("Finito il preprocessing di " + resources[i])
 
-blobs_log = blob_log(result, min_sigma=0.1, num_sigma=10, threshold=.05)
-print("Finita la ricerca dei blob")
+print("Finito il preprocessing: ")
+imgPlot = plt.imshow(result)
+plt.show()
 
-print("X" * 100)
-for blob in blobs_log:
-	y, x, radius = blob
-
-	if radius > 1:
-		print("x: " + str(x) + " y: " + str(y) + " radius: " + str(radius))
+# Algoritmo trova blob
+# blobs_log = blob_log(result, min_sigma=0.1, num_sigma=10, threshold=.05)
+# print("Finita la ricerca dei blob")
+#
+# print("X" * 100)
+# for blob in blobs_log:
+# 	y, x, radius = blob
+#
+# 	if radius > 1:
+# 		print("x: " + str(x) + " y: " + str(y) + " radius: " + str(radius))
 
 # colors = ['yellow', 'lime', 'red']
 # titles = ['Laplacian of Gaussian', 'Difference of Gaussian', 'Determinant of Hessian']

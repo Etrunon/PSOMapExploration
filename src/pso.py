@@ -7,16 +7,7 @@ from PIL import Image
 from src.detect_resources import detect_resource
 from src.detect_water import detect_water
 
-
-def generator(square_range, rand):
-	while True:
-		r_point = (rand.randint(0, map_dim[0]), rand.randint(0, map_dim[1]))
-		# If there is no water under the chosen point break
-		if water_map[r_point[0]][r_point[1]] == 0:
-			break
-
-	# print("Random point: " + str(r_point))
-
+def count_resources(r_point, square_range):
 	# Now we compute the value of all resources around.
 	# We do this computing first the actual bounding box around the chosen point, making sure not to get outside the
 	#    limits of the matrix. (in the case the chosen point is too close to the border)
@@ -53,8 +44,18 @@ def generator(square_range, rand):
 				res_found = res_found + 1
 
 	# print("res_found " + str(res_found))
+	return res_found
 
-	return r_point[0], r_point[1], res_found
+
+def generator(square_range, rand):
+	while True:
+		r_point = (rand.randint(0, map_dim[0]), rand.randint(0, map_dim[1]))
+		# If there is no water under the chosen point break
+		if water_map[r_point[0]][r_point[1]] == 0:
+			break
+
+	# print("Random point: " + str(r_point))
+	return r_point[0], r_point[1], count_resources(r_point, square_range)
 
 
 image_name = sys.argv[1]
@@ -71,4 +72,5 @@ map_dim = resource_map.shape
 rand: Random = Random()
 rand.seed(1)
 
-generator(square_range=30, rand=rand)
+x = generator(square_range=3, rand=rand)
+print("x: " + str(x))

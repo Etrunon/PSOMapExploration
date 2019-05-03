@@ -56,7 +56,7 @@ def generator(square_range, rand):
 
 	return r_point[0], r_point[1], res_found
 
-
+# TODO: rename file (ci pensa @etrunon ihihih)
 image_name = sys.argv[1]
 img = Image.open("data/examples/" + image_name)
 img_array = np.asarray(img, dtype="int32")

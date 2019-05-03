@@ -35,12 +35,20 @@ def __highlight_resource(res_matrix, image, resName, on_map):
 
 
 def detect_resource(img_array):
-	# Find all resources and put them on the matrix
-	result = np.zeros((img_array.shape[0], img_array.shape[1]))
-	for i in range(0, len(resources)):
-		__highlight_resource(result, img_array, resources[i], i+1)
-		print("Finito il preprocessing di " + resources[i])
+	global result
+	try:
+		result = np.load('data/cached_matrices/resources.npy')
+	except IOError:
 
-	print("Finito il preprocessing: ")
+		print('<error> Resource matrix file does not exist or cannot be read.')
 
-	return result
+		# Find all resources and put them on the matrix
+		result = np.zeros((img_array.shape[0], img_array.shape[1]))
+		for i in range(0, len(resources)):
+			__highlight_resource(result, img_array, resources[i], i + 1)
+			print('End processing of ' + resources[i])
+
+		np.save('data/cached_matrices/resources', result)
+		print('Resource processing completed!')
+	finally:
+		return result

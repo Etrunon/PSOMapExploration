@@ -1,8 +1,6 @@
 import numpy as np
+from PIL import Image
 
-# This script controls the detection of all different resources: coal, iron, copper and uranium
-# Foreach of these create a new image with everything black and only the relevant resource spots white (to ease the job
-#        of blob_detection). Then it runs blob_detection and save the result on a new matrix
 resources = [
 	"coal",
 	"iron",
@@ -34,10 +32,25 @@ def __highlight_resource(res_matrix, image, resName, on_map):
 	return res_matrix
 
 
-def detect_resource(img_array):
+def detect_resource(image_name):
+	"""
+	Scan the input matrix looking for the different resources: coal, iron, copper and uranium.
+	Foreach of them create a new image with everything black and only the relevant resource spots white (to ease the
+	job of blob_detection). Then it runs blob_detection and save the result on a new matrix.
+	Save the result matrix on file the first time, return it if it has already been computed.
+	:param image_name: name of the image
+	:return: output matrix
+	"""
+
 	global result
+
+	# Retrieve the image and convert it to an array
+	img = Image.open('data/examples/' + image_name)
+	img_array = np.asarray(img, dtype="int32")
+	image_path = 'data/cached_matrices/' + image_name.replace('.png', '') + '_resources.npy'
+
 	try:
-		result = np.load('data/cached_matrices/resources.npy')
+		result = np.load(image_path)
 	except IOError:
 
 		print('<error> Resource matrix file does not exist or cannot be read.')
@@ -48,7 +61,7 @@ def detect_resource(img_array):
 			__highlight_resource(result, img_array, resources[i], i + 1)
 			print('End processing of ' + resources[i])
 
-		np.save('data/cached_matrices/resources', result)
+		np.save(image_path, result)
 		print('Resource processing completed!')
 	finally:
 		return result

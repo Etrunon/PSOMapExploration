@@ -1,9 +1,6 @@
 import sys
 from random import Random
 
-import numpy as np
-from PIL import Image
-
 from src.detect_resources import detect_resource
 from src.detect_water import detect_water
 
@@ -19,9 +16,10 @@ def generator(square_range, rand):
 
 	# Now we compute the value of all resources around.
 	# We do this computing first the actual bounding box around the chosen point, making sure not to get outside the
-	#    limits of the matrix. (in the case the chosen point is too close to the border)
+	#    limits of the matrix (in the case the chosen point is too close to the border).
 	# The idea is to check if each vertex of the bounding box is in a legal position and if not replace it with the
 	#    border.
+	# As a note, v3 is actually not needed for the computations.
 	#
 	# v1                   v2
 	#      true_v1------true_v2--------
@@ -45,7 +43,7 @@ def generator(square_range, rand):
 	# print("true_v3: " + str(true_v3))
 	# print("true_v4: " + str(true_v4))
 
-	# Now that we have to box, lets count how many resources are inside
+	# Now that we have the box, let's count how many resources are inside
 	res_found = 0
 	for i in range(true_v1[0], true_v2[0]):
 		for j in range(true_v1[1], true_v4[1]):
@@ -56,15 +54,13 @@ def generator(square_range, rand):
 
 	return r_point[0], r_point[1], res_found
 
-# TODO: rename file (ci pensa @etrunon ihihih)
+
 image_name = sys.argv[1]
-img = Image.open("data/examples/" + image_name)
-img_array = np.asarray(img, dtype="int32")
 
 # Returns a 2 x height x width matrix.
 # The first contains resources while the second contains water
-resource_map = detect_resource(img_array)
-water_map = detect_water(img_array)
+resource_map = detect_resource(image_name)
+water_map = detect_water(image_name)
 
 map_dim = resource_map.shape
 

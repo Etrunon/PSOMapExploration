@@ -168,3 +168,6 @@ dmypy.json
 
 # .idea specific settings
 .idea/other.xml
+
+# Cached matrices
+data/cached_matrices/*

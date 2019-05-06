@@ -4,14 +4,19 @@ from random import Random
 from src.detect_resources import detect_resource
 from src.detect_water import detect_water
 
+
 def count_resources(r_point, square_range):
-	# Now we compute the value of all resources around.
-	# We do this computing first the actual bounding box around the chosen point, making sure not to get outside the
-	#    limits of the matrix (in the case the chosen point is too close to the border).
-	# The idea is to check if each vertex of the bounding box is in a legal position and if not replace it with the
-	#    border.
-	# As a note, v3 is actually not needed for the computations.
-	#
+	"""
+	Compute the value of all resources around the square.
+	The computation finds the actual bounding box around the chosen point, making sure not to get outside the
+	limits of the matrix (in the case the chosen point is too close to the border).
+	The idea is to check if each vertex of the bounding box is in a legal position and if not replace it with the border.
+	As a note, v3 is actually not needed.
+	:param r_point: random position on the map
+	:param square_range: dimensions of the boundary box
+	:return: the number of resources
+	"""
+
 	# v1                   v2
 	#      true_v1------true_v2--------
 	#      |
@@ -45,21 +50,25 @@ def count_resources(r_point, square_range):
 	return res_found
 
 
-def generator(square_range, rand):
+def particle_generator(square_range, random):
+	"""
+	Take a point on earth and returns its position plus the number of resources within the boundary box.
+	:param square_range: dimensions of the boundary box
+	:param random: random floating point
+	:return: coordinates of the particle and the number of resources
+	"""
 	while True:
-		r_point = (rand.randint(0, map_dim[0]), rand.randint(0, map_dim[1]))
-		# If there is no water under the chosen point break
-		if water_map[r_point[0]][r_point[1]] == 0:
+		random_point = (random.randint(0, map_dim[0]), random.randint(0, map_dim[1]))
+		# If there is water under the chosen point break
+		if water_map[random_point[0]][random_point[1]] == 1:
 			break
 
 	# print("Random point: " + str(r_point))
-	return r_point[0], r_point[1], count_resources(r_point, square_range)
+	return random_point[0], random_point[1], count_resources(random_point, square_range)
 
 
 image_name = sys.argv[1]
 
-# Returns a 2 x height x width matrix.
-# The first contains resources while the second contains water
 resource_map = detect_resource(image_name)
 water_map = detect_water(image_name)
 
@@ -68,5 +77,5 @@ map_dim = resource_map.shape
 rand: Random = Random()
 rand.seed(1)
 
-x = generator(square_range=3, rand=rand)
+x = particle_generator(square_range=3, random=rand)
 print("x: " + str(x))

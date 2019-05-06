@@ -32,7 +32,7 @@ def __highlight_resource(res_matrix, image, resName, on_map):
 	return res_matrix
 
 
-def detect_resource(image_name):
+def detect_resource(image_name) -> np.ndarray:
 	"""
 	Scan the input matrix looking for the different resources: coal, iron, copper and uranium.
 	Foreach of them create a new image with everything black and only the relevant resource spots white (to ease the

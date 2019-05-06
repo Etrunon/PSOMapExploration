@@ -10,12 +10,16 @@ class Particle:
     starting_base = (None, None)
     resource_radius = None
 
+    movements: np.ndarray = np.zeros([0, 2])
+
     def __init__(self, current_position, velocity, starting_base, resource_range):
         self.current_position = np.array([current_position[0], current_position[1]])
         self.velocity = velocity
         self.local_best = (0, 0, 0)
         self.starting_base = np.array([starting_base[0], starting_base[1]])
         self.resource_radius = resource_range
+        self.movements = np.append(self.movements, [self.current_position], axis=0)
+        # self.movements.append(self.current_position)
 
     def count_resources(self, map: Map):
         """
@@ -58,6 +62,11 @@ class Particle:
 
         # print("res_found " + str(res_found))
         return res_found
+
+    def move_to(self, new_position: np.ndarray):
+        self.movements = np.append(self.movements, [self.current_position], axis=0)
+        # self.movements.append(self.current_position)
+        self.current_position = new_position
 
     def __str__(self) -> str:
         return "Particle: \n" + \

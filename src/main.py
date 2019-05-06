@@ -4,9 +4,11 @@ from time import time
 
 import inspyred
 import matplotlib.pyplot
+import numpy as np
 from PIL import Image
 from inspyred.ec import Individual
 from inspyred.swarm import PSO
+from matplotlib import pyplot
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.patches import Circle
@@ -30,7 +32,7 @@ def particle_generator(random, args):
     # for lo, hi in zip(bounder.lower_bound, bounder.upper_bound):
     #     chromosome.append(random.uniform(lo, hi))
     random_point = (random.randint(0, world_map.map_dim[0]), random.randint(0, world_map.map_dim[1]))
-    return Particle(random_point, 0, resource_range=RESOURCE_RANGE, starting_base=(0, 0))
+    return Particle(random_point, 0, resource_range=RESOURCE_RANGE, starting_base=STARTING_POSITION)
 
 
 def fitness_evaluator(candidates, args):
@@ -83,21 +85,23 @@ def variator(random, candidates, args):
         best_particle: Particle = pbest.candidate
         best_neighbour: Particle = nbest.candidate
 
-        particle.current_position = (
+        new_position = (
                 particle.current_position + inertia * (particle.current_position - previous_particle.current_position) +
                 cognitive_rate * random.random() * (best_particle.current_position - particle.current_position) +
                 social_rate * random.random() * (best_neighbour.current_position - particle.current_position)
         )
 
-        particle.current_position = algorithm.bounder(particle.current_position, args)
-        print("New position:" + str(particle.current_position))
-        particle.current_position = particle.current_position.astype(int)
+        new_position_bounded = algorithm.bounder(new_position, args)
+        new_position_bounded = new_position_bounded.astype(int)  # cast to int
+        particle.move_to(new_position_bounded)
+
         offspring.append(particle)
 
     return offspring
 
 
 RESOURCE_RANGE = 30
+STARTING_POSITION = (0, 0)
 
 if __name__ == "__main__":
     rand = Random()
@@ -119,24 +123,45 @@ if __name__ == "__main__":
 
     final_pop = algorithm.evolve(generator=particle_generator,
                                  evaluator=fitness_evaluator,
-                                 pop_size=100,
+                                 pop_size=5,
                                  maximize=False,
                                  bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
                                  # neighborhood_size=5,
-                                 max_evaluations=1000,
+                                 max_evaluations=100,
                                  # statistics_file=stat_file,
                                  # individuals_file=ind_file)
-                                 inertia=0.8
+                                 inertia=0.5
                                  )
 
     best = final_pop[0]
     best_particle: Particle = best.candidate
     print('\nFittest individual:')
     print(best)
-    figure: Figure = matplotlib.pyplot.figure()
+    figure: Figure = matplotlib.pyplot.figure(2)
     matplotlib.pyplot.imshow(Image.open('data/examples/' + image_name))
     ax: Axes = figure.add_subplot(111)
-    circle = Circle(best_particle.current_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
-    ax.add_patch(circle)
+    # ax.set_xticklabels([])
+    # ax.set_yticklabels([])
+    ax.set_aspect('equal')
+    ax.use_sticky_edges = False
+
+    end = Circle(best_particle.current_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
+    ax.add_patch(end)
+
+    start = Circle(STARTING_POSITION, 10, facecolor="red", alpha=1)
+    ax.add_patch(start)
+
+    # ax.plot(STARTING_POSITION, "ro")
+
+    for pop in final_pop:
+        particle = pop.candidate
+        x, y = zip(*particle.movements)
+        plot = ax.plot(x, y, ".")
+
+        # ax.arrow(0, f(0), 0.01, f(0.01) - f(0), shape='full', lw=0, length_includes_head=True, head_width=.05)
+        ax.quiver(x[:-1], y[:-1], np.subtract(x[1:], x[:-1]), np.subtract(y[1:], y[:-1]), scale_units='xy', angles='xy',
+                  scale=1, width=0.005, color=plot[0].get_color(), alpha=0.3)
+
+    pyplot.grid()
     # ax.plot(best_particle.current_position[0], best_particle.current_position[1], "or")
     matplotlib.pyplot.show(block=True)

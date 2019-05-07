@@ -10,10 +10,10 @@ from src.Map import Map
 from src.Particle import Particle
 
 
-def generate(map: Map, starting_base: Tuple[int, int], resource_radius, random):
+def generate(map: Map, starting_base: Tuple[int, int], resource_half_square, random):
     """
     Take a point on earth and returns its position plus the number of resources within the boundary box.
-    :param resource_radius: range in which the particle will be looking for resources
+    :param resource_half_square: range in which the particle will be looking for resources
     :param starting_base: base of operations
     :param map:
     :param random: random generator
@@ -26,7 +26,7 @@ def generate(map: Map, starting_base: Tuple[int, int], resource_radius, random):
             break
 
     # print("Random point: " + str(r_point))
-    return Particle((443, 533), 0, starting_base, resource_radius)
+    return Particle((443, 533), 0, starting_base, resource_half_square)
     # return Particle(random_point, 0, starting_base, resource_range)
 
 
@@ -40,7 +40,7 @@ def evaluator(particle: Particle, map: Map):
     print("res_count: " + str(res_count))
     print("Distance: " + str(distance))
 
-    square_area = (particle.resource_radius*2)**2
+    square_area = (particle.resource_half_square * 2) ** 2
     normalization_factor = math.atan(square_area / map.map_dim[0])
     print("math.tan(normalization_factor): " + str(math.tan(normalization_factor)))
     return distance * math.tan(normalization_factor) - res_count
@@ -53,7 +53,7 @@ map = Map(image_name)
 rand: Random = Random()
 rand.seed(1)
 
-x = generate(map, resource_radius=25, random=rand, starting_base=(0, 0))  # ToDo mettere starting base casuale?
+x = generate(map, resource_half_square=25, random=rand, starting_base=(0, 0))  # ToDo mettere starting base casuale?
 score = evaluator(x, map)
 print("x: " + str(x))
 print("score x: " + str(score))

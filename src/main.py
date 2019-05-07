@@ -1,7 +1,9 @@
+import logging
 import sys
 from random import Random
 from time import time
 
+import coloredlogs
 import inspyred
 import matplotlib.pyplot
 import numpy as np
@@ -17,10 +19,13 @@ from src import pso
 from src.Map import Map
 from src.Particle import Particle
 
+logger = logging.getLogger(__name__)
+matplotlib.use("Qt5Agg")
+
 
 def custom_observer(population, num_generations, num_evaluations, args):
     best = max(population)
-    print('Generations: {0}  Evaluations: {1}  Best: {2}'.format(num_generations, num_evaluations, str(best)))
+    logger.debug('Generations: %d  Evaluations: %d  Best: %s', num_generations, num_evaluations, best)
 
 
 def particle_generator(random, args):
@@ -100,44 +105,37 @@ def variator(random, candidates, args):
     return offspring
 
 
-RESOURCE_RANGE = 30
+RESOURCE_RANGE = 100
 STARTING_POSITION = (0, 0)
 
+
+class CustomPSO(PSO):
+
+    def __init__(self, random):
+        super().__init__(random)
+
+    def __getstate__(self):
+        d = dict(self.__dict__)
+        del d['logger']
+        return d
+
+    def __setstate__(self, d):
+        self.__dict__.update(d)
+
+
 if __name__ == "__main__":
+    coloredlogs.install(level='DEBUG', style='{', fmt='{name:15s} {levelname} {message}')
+
     rand = Random()
     rand.seed(int(time()))
 
     image_name = sys.argv[1]
     world_map = Map(image_name)
 
-    # matplotlib.pyplot.imshow(world_map.resource_map)
-
-    algorithm = inspyred.swarm.PSO(rand)
-    algorithm.terminator = inspyred.ec.terminators.evaluation_termination
-    # algorithm.observer = [inspyred.ec.observers.file_observer, inspyred.ec.observers.plot_observer, custom_observer]
-    algorithm.observer = [inspyred.ec.observers.plot_observer, custom_observer]
-
-    algorithm.variator = variator
-    # algorithm.topology = inspyred.swarm.topologies.ring_topology
-    algorithm.topology = inspyred.swarm.topologies.star_topology
-
-    final_pop = algorithm.evolve(generator=particle_generator,
-                                 evaluator=fitness_evaluator,
-                                 pop_size=5,
-                                 maximize=False,
-                                 bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
-                                 # neighborhood_size=5,
-                                 max_evaluations=100,
-                                 # statistics_file=stat_file,
-                                 # individuals_file=ind_file)
-                                 inertia=0.5
-                                 )
-
-    best = final_pop[0]
-    best_particle: Particle = best.candidate
-    print('\nFittest individual:')
-    print(best)
+    matplotlib.pyplot.style.use("seaborn-bright")
     figure: Figure = matplotlib.pyplot.figure(2)
+    pyplot.grid()
+
     matplotlib.pyplot.imshow(Image.open('data/examples/' + image_name))
     ax: Axes = figure.add_subplot(111)
     # ax.set_xticklabels([])
@@ -145,13 +143,46 @@ if __name__ == "__main__":
     ax.set_aspect('equal')
     ax.use_sticky_edges = False
 
-    end = Circle(best_particle.current_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
-    ax.add_patch(end)
-
     start = Circle(STARTING_POSITION, 10, facecolor="red", alpha=1)
     ax.add_patch(start)
 
-    # ax.plot(STARTING_POSITION, "ro")
+    matplotlib.pyplot.tight_layout(pad=0)
+    # matplotlib.pyplot.show(block=False)
+
+    figure: Figure = matplotlib.pyplot.figure(1)
+
+    algorithm = CustomPSO(rand)
+    algorithm.terminator = inspyred.ec.terminators.evaluation_termination
+    # algorithm.observer = [inspyred.ec.observers.file_observer, inspyred.ec.observers.plot_observer, custom_observer]
+    # algorithm.observer = [inspyred.ec.observers.plot_observer, custom_observer]
+
+    algorithm.variator = variator
+    # algorithm.topology = inspyred.swarm.topologies.ring_topology
+    algorithm.topology = inspyred.swarm.topologies.star_topology
+
+    final_pop = algorithm.evolve(generator=particle_generator,
+                                 evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
+                                 mp_evaluator=fitness_evaluator,
+                                 pop_size=5,
+                                 maximize=False,
+                                 # mp_num_cpus=4,
+                                 bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
+                                 # neighborhood_size=5,
+                                 max_evaluations=1000,
+                                 # statistics_file=stat_file,
+                                 # individuals_file=ind_file)
+                                 inertia=0.7,
+                                 cognitive_rate=0.3,
+                                 social_rate=0.01
+                                 )
+
+    best = final_pop[0]
+    best_particle: Particle = best.candidate
+    logger.info('Fittest individual: %s', best)
+
+    # Plot the best location found
+    end = Circle(best_particle.current_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
+    ax.add_patch(end)
 
     for pop in final_pop:
         particle = pop.candidate
@@ -162,6 +193,6 @@ if __name__ == "__main__":
         ax.quiver(x[:-1], y[:-1], np.subtract(x[1:], x[:-1]), np.subtract(y[1:], y[:-1]), scale_units='xy', angles='xy',
                   scale=1, width=0.005, color=plot[0].get_color(), alpha=0.3)
 
-    pyplot.grid()
-    # ax.plot(best_particle.current_position[0], best_particle.current_position[1], "or")
+    ax.annotate("{:.0f}".format(best.fitness), best_particle.current_position)
     matplotlib.pyplot.show(block=True)
+

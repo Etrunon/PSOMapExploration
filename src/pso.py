@@ -1,13 +1,18 @@
+import logging
 import math
 import sys
 from random import Random
 from typing import Tuple
+
+import coloredlogs as coloredlogs
 from inspyred import benchmarks
 
 import numpy as np
 
 from src.Map import Map
 from src.Particle import Particle
+
+logger = logging.getLogger(__name__)
 
 
 def generate(map: Map, starting_base: Tuple[int, int], resource_radius, random):
@@ -37,25 +42,37 @@ def evaluator(particle: Particle, map: Map):
     """""
     res_count = particle.count_resources(map)
     distance = np.linalg.norm(particle.current_position - particle.starting_base)
-    print("res_count: " + str(res_count))
-    print("Distance: " + str(distance))
+    logging.debug("res_count: " + str(res_count))
+    logging.debug("Distance: " + str(distance))
 
-    square_area = (particle.resource_radius*2)**2
+    square_area = (particle.resource_radius * 2) ** 2
     normalization_factor = math.atan(square_area / map.map_dim[0])
-    print("math.tan(normalization_factor): " + str(math.tan(normalization_factor)))
+    logging.debug("math.tan(normalization_factor): " + str(math.tan(normalization_factor)))
     return distance * math.tan(normalization_factor) - res_count
 
 
-image_name = sys.argv[1]
+STARTING_BASE = (0, 0)
+RESOURCE_RADIUS = 25
 
-map = Map(image_name)
+if __name__ == "__main__":
+    coloredlogs.install(level='DEBUG')
 
-rand: Random = Random()
-rand.seed(1)
+    image_name = sys.argv[1]
 
-x = generate(map, resource_radius=25, random=rand, starting_base=(0, 0))  # ToDo mettere starting base casuale?
-score = evaluator(x, map)
-print("x: " + str(x))
-print("score x: " + str(score))
+    map = Map(image_name)
 
-print(str())
+    rand: Random = Random()
+    rand.seed(1)
+
+    particle = generate(map, resource_radius=RESOURCE_RADIUS,
+                        random=rand,
+                        starting_base=STARTING_BASE)  # ToDo mettere starting base casuale?
+    score = evaluator(particle, map)
+    logger.debug("particle: %s", particle)
+    logger.debug("score: %d", score)
+
+    # x, y = map.map_dim
+    # for i in range(0, x):
+    #     for j in range(0, y):
+    #         p = Particle([i, j], 0, STARTING_BASE, RESOURCE_RADIUS)
+    #         resources = p.count_resources(map)

@@ -2,6 +2,10 @@ import numpy as np
 
 from src.Map import Map
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Particle:
     current_position = (None, None)
@@ -19,7 +23,6 @@ class Particle:
         self.starting_base = np.array([starting_base[0], starting_base[1]])
         self.resource_radius = resource_range
         self.movements = np.append(self.movements, [self.current_position], axis=0)
-        # self.movements.append(self.current_position)
 
     def count_resources(self, map: Map):
         """
@@ -54,7 +57,8 @@ class Particle:
 
         # Now that we have the box, let's count how many resources are inside
         res_found = 0
-        print("square range: " + str(true_v1) + ", " + str(true_v2) + ", " + str(true_v3) + ", " + str(true_v4) + ", ")
+        logger.debug(
+            "square range: " + str(true_v1) + ", " + str(true_v2) + ", " + str(true_v3) + ", " + str(true_v4) + ", ")
         for i in range(true_v1[0], true_v2[0]):
             for j in range(true_v1[1], true_v4[1]):
                 if map.resource_map[i][j] != 0:
@@ -65,12 +69,10 @@ class Particle:
 
     def move_to(self, new_position: np.ndarray):
         self.movements = np.append(self.movements, [self.current_position], axis=0)
-        # self.movements.append(self.current_position)
         self.current_position = new_position
 
     def __str__(self) -> str:
-        return "Particle: \n" + \
-               "\tcurrent_position: " + str(self.current_position) + " \n" + \
+        return "current_position: " + str(self.current_position) + " \n" + \
                "\tvelocity: " + str(self.velocity) + " \n" + \
                "\tlocal_best: " + str(self.local_best) + " \n" + \
                "\tstarting_base: " + str(self.starting_base) + " \n" + \

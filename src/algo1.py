@@ -14,10 +14,10 @@ from src.data_structures.Particle import Particle
 logger = logging.getLogger(__name__)
 
 
-def generate(map: Map, starting_base: Tuple[int, int], resource_radius, random):
+def generate(map: Map, starting_base: Tuple[int, int], resource_half_square, random):
     """
     Take a point on earth and returns its position plus the number of resources within the boundary box.
-    :param resource_radius: range in which the particle will be looking for resources
+    :param resource_half_square: range in which the particle will be looking for resources
     :param starting_base: base of operations
     :param map:
     :param random: random generator
@@ -30,7 +30,7 @@ def generate(map: Map, starting_base: Tuple[int, int], resource_radius, random):
             break
 
     # print("Random point: " + str(r_point))
-    return Particle((443, 533), 0, starting_base, resource_radius)
+    return Particle((443, 533), 0, starting_base, resource_half_square)
     # return Particle(random_point, 0, starting_base, resource_range)
 
 
@@ -44,7 +44,7 @@ def evaluator(particle: Particle, map: Map):
     logging.debug("res_count: " + str(res_count))
     logging.debug("Distance: " + str(distance))
 
-    square_area = (particle.resource_radius * 2) ** 2
+    square_area = (particle.resource_half_square * 2) ** 2
     normalization_factor = math.atan(square_area / map.map_dim[0])
     logging.debug("math.tan(normalization_factor): " + str(math.tan(normalization_factor)))
     return distance * math.tan(normalization_factor) - res_count

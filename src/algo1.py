@@ -5,12 +5,11 @@ from random import Random
 from typing import Tuple
 
 import coloredlogs as coloredlogs
-from inspyred import benchmarks
 
 import numpy as np
 
-from src.Map import Map
-from src.Particle import Particle
+from src.data_structures.Map import Map
+from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
 

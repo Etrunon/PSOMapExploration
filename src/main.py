@@ -15,9 +15,9 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.patches import Circle
 
-from src import pso
-from src.Map import Map
-from src.Particle import Particle
+from src import algo1
+from src.data_structures.Map import Map
+from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
 matplotlib.use("Qt5Agg")
@@ -48,7 +48,7 @@ def fitness_evaluator(candidates, args):
         # boost_velocity = (chromosome[2], chromosome[3])
         # initial_y_velocity = chromosome[4]
 
-        score = pso.evaluator(particle, world_map)
+        score = algo1.evaluator(particle, world_map)
         fitness.append(score)
 
     return fitness

@@ -1,5 +1,5 @@
-from src.detect_resources import detect_resource
-from src.detect_water import detect_water
+from src.preprocess_utilities.detect_resources import detect_resource
+from src.preprocess_utilities.detect_water import detect_water
 
 
 class Map:

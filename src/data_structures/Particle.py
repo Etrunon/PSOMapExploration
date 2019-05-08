@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.Map import Map
+from src.data_structures.Map import Map
 
 import logging
 
@@ -11,7 +11,10 @@ class Particle:
     current_position = (None, None)
     velocity = None
     local_best = (None, None, None)
+    # Location of the "city" which we're trying to optimize
     starting_base = (None, None)
+    #     Radius in which this particle will look for resource. It is a square (not a circle) and this number represents
+    # half side (i.e. if this number is 10 the square has side 20 and area 400)
     resource_radius = None
 
     movements: np.ndarray = np.zeros([0, 2])

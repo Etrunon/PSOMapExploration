@@ -1,7 +1,6 @@
 import logging
 import sys
 from random import Random
-from time import time
 
 import coloredlogs
 import inspyred
@@ -69,12 +68,12 @@ def variator(random, candidates, args):
     offspring = []
 
     x: Individual
-    xprev: Individual
-    for x, xprev, pbest, hood in zip(algorithm.population,
-                                     algorithm._previous_population,
-                                     algorithm.archive,
-                                     neighbors):
-        nbest = max(hood)
+    xprev: Individual  # represents the particle at the previous iteration
+    for x, xprev, pbest, neighbor in zip(algorithm.population,
+                                         algorithm._previous_population,
+                                         algorithm.archive,
+                                         neighbors):
+        nbest = max(neighbor)
 
         # for xi, xpi, pbi, nbi in zip(x.candidate, xprev.candidate,
         #                              pbest.candidate, nbest.candidate):
@@ -90,12 +89,15 @@ def variator(random, candidates, args):
         best_particle: Particle = pbest.candidate
         best_neighbour: Particle = nbest.candidate
 
+        # new position is obtained considering the inertia of the particle, its position wrt the best individual in the
+        # swarm and the best individual among its neighbors
         new_position = (
                 particle.current_position + inertia * (particle.current_position - previous_particle.current_position) +
                 cognitive_rate * random.random() * (best_particle.current_position - particle.current_position) +
                 social_rate * random.random() * (best_neighbour.current_position - particle.current_position)
         )
 
+        # the bounder filters out unwanted position values
         new_position_bounded = algorithm.bounder(new_position, args)
         new_position_bounded = new_position_bounded.astype(int)  # cast to int
         particle.move_to(new_position_bounded)
@@ -107,6 +109,7 @@ def variator(random, candidates, args):
 
 RESOURCE_RANGE = 100
 STARTING_POSITION = (0, 0)
+POPULATION_SIZE = 2
 
 
 class CustomPSO(PSO):
@@ -127,7 +130,7 @@ if __name__ == "__main__":
     coloredlogs.install(level='DEBUG', style='{', fmt='{name:15s} {levelname} {message}')
 
     rand = Random()
-    rand.seed(int(time()))
+    rand.seed(1)
 
     image_name = sys.argv[1]
     world_map = Map(image_name)
@@ -154,18 +157,18 @@ if __name__ == "__main__":
     algorithm = CustomPSO(rand)
     algorithm.terminator = inspyred.ec.terminators.evaluation_termination
     # algorithm.observer = [inspyred.ec.observers.file_observer, inspyred.ec.observers.plot_observer, custom_observer]
-    # algorithm.observer = [inspyred.ec.observers.plot_observer, custom_observer]
+    algorithm.observer = [inspyred.ec.observers.plot_observer, custom_observer]
 
     algorithm.variator = variator
     # algorithm.topology = inspyred.swarm.topologies.ring_topology
     algorithm.topology = inspyred.swarm.topologies.star_topology
 
     final_pop = algorithm.evolve(generator=particle_generator,
-                                 evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
-                                 mp_evaluator=fitness_evaluator,
-                                 pop_size=5,
+                                 # evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
+                                 evaluator=fitness_evaluator,
+                                 # mp_evaluator=fitness_evaluator,
+                                 pop_size=POPULATION_SIZE,
                                  maximize=False,
-                                 # mp_num_cpus=4,
                                  bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
                                  # neighborhood_size=5,
                                  max_evaluations=1000,
@@ -195,4 +198,3 @@ if __name__ == "__main__":
 
     ax.annotate("{:.0f}".format(best.fitness), best_particle.current_position)
     matplotlib.pyplot.show(block=True)
-

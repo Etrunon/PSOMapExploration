@@ -1,6 +1,7 @@
 import logging
 import sys
 from random import Random
+from typing import List, Dict
 
 import coloredlogs
 import inspyred
@@ -107,9 +108,24 @@ def variator(random, candidates, args):
     return offspring
 
 
+def evaluation_termination(population: List[Individual], num_generations: int, num_evaluations: int,
+                           args: Dict) -> bool:
+    fitnesses = []
+
+    for index, p in enumerate(population):
+        fitnesses = np.insert(fitnesses, index, p.fitness)
+    variance = np.var(fitnesses)
+
+    if variance < TERMINATION_VARIANCE:
+        return True
+    else:
+        return False
+
+
 RESOURCE_RANGE = 100
 STARTING_POSITION = (0, 0)
 POPULATION_SIZE = 2
+TERMINATION_VARIANCE = 5000  # TODO: find optimal value
 
 
 class CustomPSO(PSO):
@@ -155,7 +171,7 @@ if __name__ == "__main__":
     figure: Figure = matplotlib.pyplot.figure(1)
 
     algorithm = CustomPSO(rand)
-    algorithm.terminator = inspyred.ec.terminators.evaluation_termination
+    algorithm.terminator = evaluation_termination
     # algorithm.observer = [inspyred.ec.observers.file_observer, inspyred.ec.observers.plot_observer, custom_observer]
     algorithm.observer = [inspyred.ec.observers.plot_observer, custom_observer]
 

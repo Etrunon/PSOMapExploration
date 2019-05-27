@@ -23,3 +23,12 @@ This will create a new map with as name map_(timestamp).png in the ``data/exampl
 Parameter ``map-preview-scale`` manage the scale with 1 meaning 1 meter per pixel.
 
 Other generation parameters are in the setting file. 
+
+
+#### TODO list (27-05-2019)
+Problems to be solved
+- [ ] Refactor variator (issue with the last particle position which is the same causing the first individual to be stationary)
+- [ ] Implement terminator function (a possible criterion may be check if the current position does not change for at least X iterations)
+- [ ] Add velocity/acceleration to particles
+- [ ] Optimize resource count evaluation (using memoization)
+- [ ] Refactor of fitness_evaluator function (why tan and atan? normalization_factor has always the same factor...)

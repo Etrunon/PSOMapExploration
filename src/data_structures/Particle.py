@@ -9,6 +9,13 @@ logger = logging.getLogger(__name__)
 
 
 class Particle:
+    """
+    A single individual in a swarm
+
+    Attributes:
+        movements: Array containing all the positions
+    """
+
     current_position = (None, None)
     velocity = None
     local_best = (None, None, None)
@@ -36,7 +43,9 @@ class Particle:
         limits of the matrix (in the case the chosen point is too close to the border).
         The idea is to check if each vertex of the bounding box is in a legal position and if not replace it with the border.
         As a note, v3 is actually not needed.
-        :return: the number of resources
+
+        Returns:
+            The number of resources
         """
         # v1                   v2
         #      true_v1------true_v2--------
@@ -84,6 +93,13 @@ class Particle:
         return res_found
 
     def move_to(self, new_position: np.ndarray):
+        """
+        Set the particle to the given position, saving its old one inside the movements array
+
+        Args:
+             new_position: Array with x and y coordinates
+        """
+
         self.movements = np.append(self.movements, [self.current_position], axis=0)
         self.current_position = new_position
 

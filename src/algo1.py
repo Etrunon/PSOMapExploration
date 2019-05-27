@@ -5,7 +5,6 @@ from random import Random
 from typing import Tuple
 
 import coloredlogs as coloredlogs
-
 import numpy as np
 
 from src.data_structures.Map import Map
@@ -54,7 +53,7 @@ STARTING_BASE = (0, 0)
 RESOURCE_RADIUS = 25
 
 if __name__ == "__main__":
-    coloredlogs.install(level='DEBUG')
+    coloredlogs.install(level='DEBUG', style='{', fmt='{name:15s} {levelname} {message}')
 
     image_name = sys.argv[1]
 
@@ -63,7 +62,8 @@ if __name__ == "__main__":
     rand: Random = Random()
     rand.seed(1)
 
-    particle = generate(map, resource_radius=RESOURCE_RADIUS,
+    particle = generate(map,
+                        resource_half_square=RESOURCE_RADIUS,
                         random=rand,
                         starting_base=STARTING_BASE)  # ToDo mettere starting base casuale?
     score = evaluator(particle, map)

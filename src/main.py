@@ -127,7 +127,8 @@ if __name__ == "__main__":
     coloredlogs.install(level='DEBUG', style='{', fmt='{name:15s} {levelname} {message}')
 
     rand = Random()
-    rand.seed(int(time()))
+    # rand.seed(int(time()))
+    rand.seed(1) # Fix this to ease implementation adding reproducibility
 
     image_name = sys.argv[1]
     world_map = Map(image_name)
@@ -163,17 +164,17 @@ if __name__ == "__main__":
     final_pop = algorithm.evolve(generator=particle_generator,
                                  evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
                                  mp_evaluator=fitness_evaluator,
-                                 pop_size=5,
+                                 pop_size=10,
                                  maximize=False,
                                  # mp_num_cpus=4,
                                  bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
                                  # neighborhood_size=5,
-                                 max_evaluations=1000,
+                                 max_evaluations=2000,
                                  # statistics_file=stat_file,
                                  # individuals_file=ind_file)
-                                 inertia=0.7,
-                                 cognitive_rate=0.3,
-                                 social_rate=0.01
+                                 inertia=1,
+                                 cognitive_rate=1,
+                                 social_rate=1
                                  )
 
     best = final_pop[0]

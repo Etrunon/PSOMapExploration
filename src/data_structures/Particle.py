@@ -11,9 +11,9 @@ class Particle:
     current_position = (None, None)
     velocity = None
     local_best = (None, None, None)
-    # Location of the "city" which we're trying to optimize
+    #   Location of the "city" which we're trying to optimize
     starting_base = (None, None)
-    #     Radius in which this particle will look for resource. It is a square (not a circle) and this number represents
+    #   Radius in which this particle will look for resource. It is a square (not a circle) and this number represents
     # half side (i.e. if this number is 10 the square has side 20 and area 400)
     resource_half_square = None
 
@@ -59,16 +59,8 @@ class Particle:
         true_v4 = (max(v4[0], 0), min(v4[1], map.map_dim[1]))
 
         # Now that we have the box, let's count how many resources are inside
-        res_found = 0
-        logger.debug(
-            "square range: " + str(true_v1) + ", " + str(true_v2) + ", " + str(true_v3) + ", " + str(true_v4) + ", ")
-        for i in range(true_v1[0], true_v2[0]):
-            for j in range(true_v1[1], true_v4[1]):
-                if map.resource_map[i][j] != 0:
-                    res_found = res_found + 1
-
-        # print("res_found " + str(res_found))
-        return res_found
+        sub_matrix = map.resource_map[true_v1[0]:true_v2[0], true_v1[1]:true_v4[1]]
+        return np.sum(sub_matrix)
 
     def move_to(self, new_position: np.ndarray):
         self.movements = np.append(self.movements, [self.current_position], axis=0)

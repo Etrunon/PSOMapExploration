@@ -1,7 +1,7 @@
 import logging
 import math
 from random import Random
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 import numpy as np
 from inspyred.ec import Individual
@@ -58,7 +58,6 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
     """
 
     algorithm: CustomPSO = args["_ec"]
-    world_map = algorithm.get_world_map()
     inertia = args.setdefault('inertia', 0.5)
     cognitive_rate = args.setdefault('cognitive_rate', 2.1)
     social_rate = args.setdefault('social_rate', 2.1)
@@ -88,7 +87,7 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
 
         new_position = particle.current_position + velocity
 
-        if out_of_map(new_position, world_map.map_dim):
+        if algorithm.world_map.out_of_map(new_position):
             norm = np.linalg.norm(velocity)
             random_coordinate_x = random.random() * norm
             if random.random() > 0.5:
@@ -158,14 +157,6 @@ def evaluate_particle(candidates: List[Particle], args) -> List[float]:
         fitness.append(score)
 
     return fitness
-
-
-def out_of_map(position: np.ndarray, map_dim: Tuple[int, int]) -> bool:  # TODO: move into Map
-    for coordinate in position:
-        if coordinate > map_dim[0] or coordinate < 0:
-            return True
-
-    return False
 
 
 class CustomPSO(PSO):

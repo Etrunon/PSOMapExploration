@@ -25,12 +25,14 @@ Parameter ``map-preview-scale`` manage the scale with 1 meaning 1 meter per pixe
 Other generation parameters are in the setting file. 
 
 
-#### TODO list (27-05-2019)
+#### TODO list (30-05-2019)
 Problems to be solved
-- [ ] Add comments to main file (now it is a bit obscure)
+- [x] Add comments to main file (now it is a bit obscure)
 - [ ] Refactor multiprocessor support ( add a global switch for easy on-off)
-- [ ] Refactor variator (issue with the last particle position which is the same causing the first individual to be stationary)
-- [ ] Implement terminator function (a possible criterion may be check if the current position does not change for at least X iterations)
+- [x] Refactor variator (issue with the last particle position which is the same causing the first individual to be stationary)
+- [x] Implement terminator function (a possible criterion may be check if the current position does not change for at least X iterations)
 - [ ] Add velocity/acceleration to particles
+	- [ ] Bound velocity
+	- [ ] Dynamic acceleration
 - [ ] Optimize resource count evaluation (using memoization)
 - [ ] Refactor of fitness_evaluator function (why tan and atan? normalization_factor has always the same factor...)

@@ -26,6 +26,7 @@ class Particle:
     best_position: np.ndarray = None
 
     movements: np.ndarray = np.zeros([0, 2])  #: Array containing all the positions
+    velocities: np.ndarray = np.zeros([0, 2])  #: Array containing all the velocities
 
     def __init__(self, starting_position, velocity: np.ndarray, starting_base, resource_range):
         self.current_position = np.array([starting_position[0], starting_position[1]])
@@ -55,13 +56,13 @@ class Particle:
         # v4   true_v4         v3
 
         v1 = (
-        self.current_position[0] - self.resource_half_square, self.current_position[1] - self.resource_half_square)
+            self.current_position[0] - self.resource_half_square, self.current_position[1] - self.resource_half_square)
         v2 = (
-        self.current_position[0] + self.resource_half_square, self.current_position[1] - self.resource_half_square)
+            self.current_position[0] + self.resource_half_square, self.current_position[1] - self.resource_half_square)
         v3 = (
-        self.current_position[0] + self.resource_half_square, self.current_position[1] + self.resource_half_square)
+            self.current_position[0] + self.resource_half_square, self.current_position[1] + self.resource_half_square)
         v4 = (
-        self.current_position[0] - self.resource_half_square, self.current_position[1] + self.resource_half_square)
+            self.current_position[0] - self.resource_half_square, self.current_position[1] + self.resource_half_square)
 
         true_v1 = (max(v1[0], 0), max(v1[1], 0))
         true_v2 = (min(v2[0], map.map_dim[0]), max(v2[1], 0))
@@ -102,6 +103,16 @@ class Particle:
 
         self.movements = np.append(self.movements, [self.current_position], axis=0)
         self.current_position = new_position
+
+    def set_velocity(self, new_velocity: np.ndarray):  # TODO: needed?
+        """
+        Set the particle's velocity, saving its old one inside the velocities array
+
+        Args:
+             new_velocity: Array with x and y velocity
+        """
+        self.velocities = np.append(self.velocities, [self.velocity], axis=0)
+        self.velocity = new_velocity
 
     def __str__(self) -> str:
         return "current_position: " + str(self.current_position) + " \n" + \

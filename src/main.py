@@ -1,4 +1,5 @@
 import logging
+import math
 import sys
 from random import Random
 from typing import List, Dict
@@ -8,7 +9,7 @@ import inspyred
 import matplotlib.pyplot
 import numpy as np
 from PIL import Image
-from inspyred.ec import Individual
+from inspyred.ec import Individual, terminators
 from inspyred.swarm import PSO
 from matplotlib import pyplot
 from matplotlib.axes import Axes
@@ -42,19 +43,51 @@ def particle_generator(random: Random, args):
     """
     # bounder: Bounder = args["_ec"].bounder
     random_point = (random.randint(0, world_map.map_dim[0]), random.randint(0, world_map.map_dim[1]))
-    return Particle(random_point, 0, resource_range=RESOURCE_RANGE, starting_base=STARTING_POSITION)
+    velocity = (random.randint(1, 100), random.randint(1, 100))
+
+    return Particle(starting_position=random_point,
+                    velocity=np.array(velocity, np.uintc),
+                    resource_range=RESOURCE_RANGE,
+                    starting_base=STARTING_POSITION)
 
 
-def fitness_evaluator(candidates: List[Particle], args):
-    fitness = []
+def fitness_evaluator(candidates: List[Particle], args) -> List[float]:
+    """
+    Evaluate the fitness for all the particles
+    - update the best position for each particle,  if applicable
+    - update the global best position, if applicable
+
+    Returns: The list of fitness values, one for each particle
+
+    """
+    fitness: List[float] = []
     for particle in candidates:
         score = algo1.evaluator(particle, world_map)
+
+        # Update the particle best fitness, if current one is better
+        if score > particle.best_fitness:
+            particle.best_fitness = score
+            particle.best_position = particle.current_position
+
+        # Update the global position, if the current one is better
+        if score > world_map.best_fitness:
+            world_map.best_fitness = score
+            world_map.best_position = particle.current_position
+
         fitness.append(score)
 
     return fitness
 
 
-def variator(random: Random, candidates: List[Particle], args):
+def variator(random: Random, candidates: List[Particle], args: Dict) -> List[Particle]:
+    """
+    Update the position of each particle in the swarm.
+    This function is called by inspyred once for each generation
+
+    Returns: A list of particle, with their positions modified
+
+    """
+
     algorithm: PSO = args["_ec"]
     inertia = args.setdefault('inertia', 0.5)
     cognitive_rate = args.setdefault('cognitive_rate', 2.1)
@@ -62,38 +95,52 @@ def variator(random: Random, candidates: List[Particle], args):
 
     if len(algorithm.archive) == 0:
         algorithm.archive = algorithm.population[:]
-    if len(algorithm._previous_population) == 0:
-        algorithm._previous_population = algorithm.population[:]
+    # if len(algorithm._previous_population) == 0:
+    #     algorithm._previous_population = algorithm.population[:]
 
-    neighbors = algorithm.topology(algorithm._random, algorithm.archive, args)
+    neighbors_generator = algorithm.topology(algorithm._random, algorithm.archive, args)
     offspring: List[Particle] = []
 
     x: Individual
-    xprev: Individual  # represents the particle at the previous iteration
-    for x, xprev, pbest, neighbor in zip(algorithm.population,
-                                         algorithm._previous_population,
-                                         algorithm.archive,
-                                         neighbors):
-        nbest = max(neighbor)
+    for x, neighbors in zip(algorithm.population, neighbors_generator):
+        best_neighbour = max(neighbors)
 
         particle: Particle = x.candidate
-        previous_particle: Particle = xprev.candidate
-        best_particle: Particle = pbest.candidate
-        best_neighbour: Particle = nbest.candidate
+        best_neighbour_particle: Particle = best_neighbour.candidate
 
-        # new position is obtained considering the inertia of the particle, its position wrt the best individual in the
-        # swarm and the best individual among its neighbors
-        new_position = (
-                particle.current_position + inertia * (particle.current_position - previous_particle.current_position) +
-                cognitive_rate * random.random() * (best_particle.current_position - particle.current_position) +
-                social_rate * random.random() * (best_neighbour.current_position - particle.current_position)
+        velocity = (
+                particle.velocity * inertia +
+                cognitive_rate * random.random() * (particle.best_position - particle.current_position) +
+                social_rate * random.random() * (best_neighbour_particle.current_position - particle.current_position)
         )
 
-        # the bounder filters out unwanted position values
-        new_position_bounded = algorithm.bounder(new_position, args)
-        new_position_bounded = new_position_bounded.astype(int)  # cast to int
-        particle.move_to(new_position_bounded)
+        #TODO: bound velocity
 
+        new_position = particle.current_position + velocity
+
+        if out_of_map(new_position):
+            norm = np.linalg.norm(velocity)
+            random_coordinate_x = random.random() * norm
+            if random.random() > 0.5:
+                random_coordinate_x = - random_coordinate_x
+
+            random_coordinate_y = math.sqrt(norm ** 2 - random_coordinate_x ** 2)
+
+            if random.random() > 0.5:
+                random_coordinate_y = - random_coordinate_y
+
+            new_velocity = np.array([random_coordinate_x, random_coordinate_y])
+
+            new_position = particle.current_position
+            velocity = new_velocity
+
+
+        # the bounder filters out unwanted position values
+        # new_position_bounded = algorithm.bounder(new_position, args)
+        # new_position_bounded = new_position_bounded.astype(int)  # cast to int
+
+        particle.velocity = velocity
+        particle.move_to(new_position.astype(int))
         offspring.append(particle)
 
     return offspring
@@ -107,16 +154,29 @@ def evaluation_termination(population: List[Individual], num_generations: int, n
         fitnesses = np.insert(fitnesses, index, p.fitness)
     variance = np.var(fitnesses)
 
-    if variance < TERMINATION_VARIANCE:
+    if (variance < TERMINATION_VARIANCE and num_generations > MIN_GENERATION):
+        logger.debug('>>>>>>>>> End for variance')
+        return True
+    elif num_generations > MAX_GENERATION:
+        logger.debug('End for max generations')
         return True
     else:
         return False
 
 
+def out_of_map(position: np.ndarray) -> bool:
+    for coordinate in position:
+        if coordinate > world_map.map_dim[0] or coordinate < 0:
+            return True
+
+    return False
+
 RESOURCE_RANGE = 100
 STARTING_POSITION = (0, 0)
 POPULATION_SIZE = 2
 TERMINATION_VARIANCE = 5000  # TODO: find optimal value
+MIN_GENERATION = 100 # TODO: find optimal value
+MAX_GENERATION = 20 # TODO: find optimal value
 
 
 class CustomPSO(PSO):
@@ -145,7 +205,7 @@ if __name__ == "__main__":
 
     # Initialize the random seed
     rand = Random()
-    rand.seed(1)
+    rand.seed()
 
     image_name = sys.argv[1]
     world_map = Map(image_name)
@@ -178,6 +238,7 @@ if __name__ == "__main__":
 
     # Set custom properties for the PSO instance
     algorithm.terminator = evaluation_termination
+    # algorithm.terminator = terminators.evaluation_termination
 
     # Set the custom variator to move each particle in the swarm
     algorithm.variator = variator
@@ -200,15 +261,15 @@ if __name__ == "__main__":
                                         maximize=False,
                                         bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
                                         # neighborhood_size=5,
-                                        max_evaluations=10,
+                                        max_evaluations=500,
                                         # statistics_file=stat_file,
                                         # individuals_file=ind_file)
-                                        inertia=0.7,
-                                        cognitive_rate=0.3,
-                                        social_rate=0.01
+                                        inertia=1,
+                                        cognitive_rate=1,
+                                        social_rate=1
                                         )
 
-    best_individual = final_population[0]
+    best_individual = final_population[len(final_population)-1]
     best_particle: Particle = best_individual.candidate
     logger.info('Fittest individual: %s', best_individual)
 
@@ -221,18 +282,19 @@ if __name__ == "__main__":
         # Extrapolate two arrays with x and y points with all the movements of the particle
         x, y = zip(*particle.movements)
         # Plot the list of points
-        plot = ax.plot(x, y, ".")
+        plot = ax.scatter(x, y)
+        logger.debug("x movements %d", len(x))
 
         # Plot arrows for point to point
-        ax.quiver(x[:-1], y[:-1],
-                  np.subtract(x[1:], x[:-1]),
-                  np.subtract(y[1:], y[:-1]),
-                  scale_units='xy',
-                  angles='xy',
-                  scale=1,
-                  width=0.005,
-                  color=plot[0].get_color(),
-                  alpha=0.3)
+        # ax.quiver(x[:-1], y[:-1],
+        #           np.subtract(x[1:], x[:-1]),
+        #           np.subtract(y[1:], y[:-1]),
+        #           scale_units='xy',
+        #           angles='xy',
+        #           scale=1,
+        #           width=0.005,
+        #           color=plot[0].get_color(),
+        #           alpha=0.3)
 
     # Show the fitness value
     ax.annotate("{:.0f}".format(best_individual.fitness), best_particle.current_position)

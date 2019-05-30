@@ -11,30 +11,30 @@ logger = logging.getLogger(__name__)
 class Particle:
     """
     A single individual in a swarm
-
-    Attributes:
-        movements: Array containing all the positions
     """
 
     current_position = (None, None)
-    velocity = None
-    local_best = (None, None, None)
+    velocity: np.ndarray = None
     # Location of the "city" which we're trying to optimize
     starting_base = (None, None)
-    #     Radius in which this particle will look for resource. It is a square (not a circle) and this number represents
-    # half side (i.e. if this number is 10 the square has side 20 and area 400)
+
+    """Radius in which this particle will look for resource. It is a square (not a circle) and this number represents
+    half side (i.e. if this number is 10 the square has side 20 and area 400)"""
     resource_half_square = None
 
-    movements: np.ndarray = np.zeros([0, 2])
+    best_fitness: float = 0
+    best_position: np.ndarray = None
 
-    def __init__(self, current_position, velocity, starting_base, resource_range):
-        self.current_position = np.array([current_position[0], current_position[1]])
+    movements: np.ndarray = np.zeros([0, 2])  #: Array containing all the positions
+
+    def __init__(self, starting_position, velocity: np.ndarray, starting_base, resource_range):
+        self.current_position = np.array([starting_position[0], starting_position[1]])
         self.velocity = velocity
-        self.local_best = (0, 0, 0)
+        self.local_best = self.current_position
+
         self.starting_base = np.array([starting_base[0], starting_base[1]])
         self.resource_half_square = resource_range
         self.resource_radius = resource_range
-        self.movements = np.append(self.movements, [self.current_position], axis=0)
 
     def count_resources(self, map: Map):
         """

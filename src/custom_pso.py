@@ -7,7 +7,7 @@ import numpy as np
 from inspyred.ec import Individual
 from inspyred.swarm import PSO
 
-from src import algo1
+from src.algorithms.algorithm import Algorithm
 from src.configuration import RESOURCE_RANGE, STARTING_POSITION, TERMINATION_VARIANCE, MIN_GENERATION, MAX_GENERATION
 from src.data_structures import Map
 from src.data_structures.Particle import Particle
@@ -142,7 +142,7 @@ def evaluate_particle(candidates: List[Particle], args) -> List[float]:
     fitness: List[float] = []
     world_map = args["_ec"].world_map
     for particle in candidates:
-        score = algo1.evaluator(particle, world_map)
+        score = args["_ec"].get_algo().evaluator(particle, world_map)
 
         # Update the particle best fitness, if current one is better
         if score > particle.best_fitness:
@@ -164,6 +164,7 @@ class CustomPSO(PSO):
     """
 
     world_map: Map = None
+    algo: Algorithm = None
 
     def set_world_map(self, map: Map):
         self.world_map = map
@@ -171,6 +172,13 @@ class CustomPSO(PSO):
     def get_world_map(self):
         assert self.world_map is not None
         return self.world_map
+
+    def set_algorithm(self, algo: Algorithm):
+        self.algo = algo
+
+    def get_algo(self):
+        assert self.algo is not None
+        return self.algo
 
     def __init__(self, random):
         super().__init__(random)

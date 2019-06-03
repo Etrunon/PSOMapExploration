@@ -12,6 +12,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.patches import Circle
 
+from src.algorithms.algo1 import Algo1
 from src.configuration import RESOURCE_RANGE, STARTING_POSITION, POPULATION_SIZE
 from src.custom_pso import generate_particle, evaluate_particle, custom_terminator, custom_variator, \
     custom_observer, CustomPSO
@@ -35,6 +36,7 @@ if __name__ == "__main__":
 
     image_name = sys.argv[1]
     world_map = Map(image_name)
+    algoritm = Algo1(world_map)
 
     # Create a figure, because inspyred already creates one
     figure: Figure = matplotlib.pyplot.figure(2)
@@ -63,6 +65,10 @@ if __name__ == "__main__":
     # Instantiate the custom PSO instance
     custom_pso = CustomPSO(rand)
 
+    # Set the map and the algorithm
+    custom_pso.set_world_map(world_map)
+    custom_pso.set_algorithm(algoritm)
+
     # Set custom properties for the PSO instance
     custom_pso.terminator = custom_terminator
 
@@ -74,9 +80,6 @@ if __name__ == "__main__":
 
     # Observers (custom logger that are notified while the algorithm runs)
     custom_pso.observer = [inspyred.ec.observers.plot_observer, custom_observer]
-
-    # Set the map
-    custom_pso.set_world_map(world_map)
 
     # Create a new figure, to be used by inspyred plot_observer
     figure: Figure = matplotlib.pyplot.figure(1)

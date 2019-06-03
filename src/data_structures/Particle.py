@@ -1,5 +1,4 @@
 import logging
-import time
 
 import numpy as np
 
@@ -70,28 +69,11 @@ class Particle:
         true_v4 = (max(v4[0], 0), min(v4[1], map.map_dim[1]))
 
         # Now that we have the box, let's count how many resources are inside
-        res_found = 0
-        logger.debug("square range: {} {}, {} {}".format(true_v1[0], true_v2[0], true_v3[0], true_v4[0]))
+        sub_matrix = map.resource_map[true_v1[0]:true_v2[0], true_v1[1]:true_v4[1]]
 
-        start = time.time()
+        return np.sum(sub_matrix)
 
-        for i in range(true_v1[0], true_v2[0]):
-            for j in range(true_v1[1], true_v4[1]):
-                if map.resource_map[i][j] != 0:
-                    res_found = res_found + 1
 
-        # Test the time required by the algorithm
-        # logger.debug("Time required: %f", time.time() - start)
-
-        # Test the time required by numpy
-        # start = time.time()
-        # slice = map.resource_map[true_v1[0]:true_v2[0], true_v1[1]:true_v4[1]]
-        #
-        # count = np.count_nonzero(slice)
-        #
-        # logger.debug("Time required numpy: %f", time.time() - start)
-
-        return res_found
 
     def move_to(self, new_position: np.ndarray):
         """

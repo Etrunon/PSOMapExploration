@@ -1,6 +1,7 @@
 import logging
 import math
 import sys
+from multiprocessing.pool import Pool
 from random import Random
 from typing import Tuple
 
@@ -52,6 +53,46 @@ def evaluator(particle: Particle, map: Map):
 STARTING_BASE = (0, 0)
 RESOURCE_RADIUS = 25
 
+
+def count_resources(x, y) -> Tuple[int, int, int]:
+    if x % 100 == 0 and y % 600 == 0:
+        logger.debug("Doing %d %d", x, y)
+    particle = Particle((x, y), 0, (0, 0), resource_range=RESOURCE_RADIUS)
+    return particle.count_resources(map), x, y
+
+
+def result_callback(args):
+    resources, x, y = args
+    result[x][y] = resources
+
+
+def error_callback(exception):
+    print(exception)
+
+
+def calculate_resources() -> np.array:
+    dimension_x, dimension_y = map.map_dim
+
+    global result
+    result = [[None for x in range(dimension_y)] for x in range(dimension_x)]
+
+    with Pool() as pool:
+        for i in range(0, dimension_x):
+            for j in range(0, dimension_y):
+                async = pool.apply_async(count_resources,
+                                         (i, j),
+                                         callback=result_callback,
+                                         error_callback=error_callback)
+
+        pool.close()
+        pool.join()
+
+    print(type(result))
+    return np.array(result, dtype=np.uint)
+
+
+result = None
+
 if __name__ == "__main__":
     coloredlogs.install(level='DEBUG', style='{', fmt='{name:15s} {levelname} {message}')
 
@@ -62,16 +103,14 @@ if __name__ == "__main__":
     rand: Random = Random()
     rand.seed(1)
 
-    particle = generate(map,
-                        resource_half_square=RESOURCE_RADIUS,
-                        random=rand,
-                        starting_base=STARTING_BASE)  # ToDo mettere starting base casuale?
-    score = evaluator(particle, map)
-    logger.debug("particle: %s", particle)
-    logger.debug("score: %d", score)
+    cached_matrix_path = 'data/cached_matrices/' + image_name.replace('.png', '') + '_resource_count.npy'
+    try:
+        resources = np.load(cached_matrix_path)
+        logger.info("Using cached matrix")
+    except IOError:
 
-    # x, y = map.map_dim
-    # for i in range(0, x):
-    #     for j in range(0, y):
-    #         p = Particle([i, j], 0, STARTING_BASE, RESOURCE_RADIUS)
-    #         resources = p.count_resources(map)
+        logger.info('Resource matrix file does not exist or cannot be read.')
+        resources = calculate_resources()
+
+        np.save(cached_matrix_path, resources)
+        logger.info('Resource processing completed!')

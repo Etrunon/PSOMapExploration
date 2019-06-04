@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     image_name = sys.argv[1]
     world_map = Map(image_name)
-    algoritm = Algo1(world_map)
+    algorithm = Algo1(world_map)
 
     # Create a figure, because inspyred already creates one
     figure: Figure = matplotlib.pyplot.figure(2)
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     # Set the map and the algorithm
     custom_pso.set_world_map(world_map)
-    custom_pso.set_algorithm(algoritm)
+    custom_pso.set_algorithm(algorithm)
 
     # Set custom properties for the PSO instance
     custom_pso.terminator = custom_terminator

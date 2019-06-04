@@ -2,6 +2,7 @@ import string
 
 import numpy as np
 
+from src.configuration import IMAGE_NAME
 from src.preprocess_utilities.detect_resources import detect_resource
 from src.preprocess_utilities.detect_water import detect_water
 
@@ -35,3 +36,6 @@ class Map:
                 return True
 
         return False
+
+
+map: Map = Map(image_name=IMAGE_NAME)

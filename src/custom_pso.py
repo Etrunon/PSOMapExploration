@@ -142,7 +142,7 @@ def evaluate_particle(candidates: List[Particle], args) -> List[float]:
     fitness: List[float] = []
     world_map = args["_ec"].world_map
     for particle in candidates:
-        score = args["_ec"].get_algorithm().evaluator(particle, world_map)
+        score = args["_ec"].get_algorithm().evaluator(particle)
 
         # Update the particle best fitness, if current one is better
         if score > particle.best_fitness:

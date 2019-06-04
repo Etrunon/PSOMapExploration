@@ -1,6 +1,7 @@
 import logging
 import math
 import sys
+from multiprocessing.pool import Pool
 from random import Random
 from typing import Tuple
 
@@ -8,6 +9,7 @@ import coloredlogs as coloredlogs
 import numpy as np
 
 from src.algorithms.algorithm import Algorithm
+from src.configuration import RESOURCE_RANGE
 from src.data_structures.Map import Map
 from src.data_structures.Particle import Particle
 
@@ -59,3 +61,58 @@ class Algo1(Algorithm):
     def __init__(self, map: Map) -> None:
         super().__init__(map)
 
+
+def count_resources(x, y) -> Tuple[int, int, int]:
+    if x % 100 == 0 and y % 600 == 0:
+        logger.debug("Doing %d %d", x, y)
+    particle = Particle((x, y), 0, (0, 0), resource_range=RESOURCE_RANGE)
+    return particle.count_resources(map), x, y
+
+
+def result_callback(args):
+    resources, x, y = args
+    result[x][y] = resources
+
+
+def calculate_resources() -> np.array:
+    dimension_x, dimension_y = map.map_dim
+
+    global result
+    result = [[None for x in range(dimension_y)] for x in range(dimension_x)]
+
+    with Pool() as pool:
+        for i in range(0, dimension_x):
+            for j in range(0, dimension_y):
+                async = pool.apply_async(count_resources,
+                                         (i, j),
+                                         callback=result_callback)
+
+        pool.close()
+        pool.join()
+
+    return np.array(result, dtype=np.uint)
+
+
+result = None
+
+if __name__ == "__main__":
+    coloredlogs.install(level='DEBUG', style='{', fmt='{name:15s} {levelname} {message}')
+
+    image_name = sys.argv[1]
+
+    map = Map(image_name)
+
+    rand: Random = Random()
+    rand.seed(1)
+
+    cached_matrix_path = 'data/cached_matrices/' + image_name.replace('.png', '') + '_resource_count.npy'
+    try:
+        resources = np.load(cached_matrix_path)
+        logger.info("Using cached matrix")
+    except IOError:
+
+        logger.info('Resource matrix file does not exist or cannot be read.')
+        resources = calculate_resources()
+
+        np.save(cached_matrix_path, resources)
+        logger.info('Resource processing completed!')

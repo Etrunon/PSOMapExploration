@@ -142,7 +142,7 @@ def evaluate_particle(candidates: List[Particle], args) -> List[float]:
     fitness: List[float] = []
     world_map = args["_ec"].world_map
     for particle in candidates:
-        score = args["_ec"].get_algo().evaluator(particle, world_map)
+        score = args["_ec"].get_algorithm().evaluator(particle, world_map)
 
         # Update the particle best fitness, if current one is better
         if score > particle.best_fitness:
@@ -164,7 +164,7 @@ class CustomPSO(PSO):
     """
 
     world_map: Map = None
-    algo: Algorithm = None
+    _algorithm: Algorithm = None
 
     def set_world_map(self, map: Map):
         self.world_map = map
@@ -174,11 +174,11 @@ class CustomPSO(PSO):
         return self.world_map
 
     def set_algorithm(self, algo: Algorithm):
-        self.algo = algo
+        self._algorithm = algo
 
-    def get_algo(self):
-        assert self.algo is not None
-        return self.algo
+    def get_algorithm(self):
+        assert self._algorithm is not None
+        return self._algorithm
 
     def __init__(self, random):
         super().__init__(random)

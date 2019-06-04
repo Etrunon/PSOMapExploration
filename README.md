@@ -28,9 +28,10 @@ Other generation parameters are in the setting file.
 #### TODO list (30-05-2019)
 Problems to be solved
 - [x] Add comments to main file (now it is a bit obscure)
-- [ ] Refactor multiprocessor support ( add a global switch for easy on-off)
+- [x] Refactor multiprocessor support ( add a global switch for easy on-off)
 - [x] Refactor variator (issue with the last particle position which is the same causing the first individual to be stationary)
 - [x] Implement terminator function (a possible criterion may be check if the current position does not change for at least X iterations)
+- [ ] Refactor loading cached matrices
 - [ ] Add velocity/acceleration to particles
 	- [ ] Bound velocity
 	- [ ] Dynamic acceleration

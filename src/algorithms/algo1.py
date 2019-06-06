@@ -52,7 +52,7 @@ class Algo1(Algorithm):
         # logging.debug("Distance: " + str(distance))
 
         square_area = (RESOURCE_RANGE * 2) ** 2
-        normalization_factor = math.atan(square_area / self.cached_resource_count.shape[0])
+        normalization_factor = math.atan(self.cached_resource_count.shape[0] / square_area)
         # logging.debug("math.tan(normalization_factor): " + str(math.tan(normalization_factor)))
         return distance * math.tan(normalization_factor) - res_count
 

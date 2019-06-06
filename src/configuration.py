@@ -2,8 +2,14 @@ import sys
 
 RESOURCE_RANGE = 100
 STARTING_POSITION = (0, 0)
-POPULATION_SIZE = 2
-TERMINATION_VARIANCE = 5000  # TODO: find optimal value
-MIN_GENERATION = 100  # TODO: find optimal value
-MAX_GENERATION = 20  # TODO: find optimal value
+TERMINATION_VARIANCE = 200  # TODO: find optimal value
+MIN_GENERATION = 200  # TODO: find optimal value
+MAX_GENERATION = 1000  # TODO: find optimal value
 IMAGE_NAME = sys.argv[1]
+
+COGNITIVE_RATE = 0.25
+SOCIAL_RATE = 0.25
+INERTIA_RATE = 2
+MAXIMUM_VELOCITY = 2
+
+POPULATION_SIZE = 3

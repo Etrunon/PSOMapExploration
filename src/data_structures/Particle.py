@@ -1,4 +1,5 @@
 import logging
+import sys
 
 import numpy as np
 
@@ -30,7 +31,8 @@ class Particle:
     def __init__(self, starting_position, velocity: np.ndarray, starting_base, resource_range):
         self.current_position = np.array([starting_position[0], starting_position[1]])
         self.velocity = velocity
-        self.local_best = self.current_position
+        self.best_position = self.current_position
+        self.best_fitness = sys.float_info.max
 
         self.starting_base = np.array([starting_base[0], starting_base[1]])
         self.resource_half_square = resource_range
@@ -99,6 +101,6 @@ class Particle:
     def __str__(self) -> str:
         return "current_position: " + str(self.current_position) + " \n" + \
                "\tvelocity: " + str(self.velocity) + " \n" + \
-               "\tlocal_best: " + str(self.local_best) + " \n" + \
+               "\tlocal_best: " + str(self.best_position) + " \n" + \
                "\tstarting_base: " + str(self.starting_base) + " \n" + \
                "\tresource_range : " + str(self.resource_half_square) + " \n"

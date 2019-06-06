@@ -8,7 +8,8 @@ from inspyred.ec import Individual
 from inspyred.swarm import PSO
 
 from src.algorithms.algorithm import Algorithm
-from src.configuration import RESOURCE_RANGE, STARTING_POSITION, TERMINATION_VARIANCE, MIN_GENERATION, MAX_GENERATION
+from src.configuration import RESOURCE_RANGE, STARTING_POSITION, TERMINATION_VARIANCE, MIN_GENERATION, MAX_GENERATION, \
+    MAXIMUM_VELOCITY
 from src.data_structures import Map
 from src.data_structures.Particle import Particle
 
@@ -29,7 +30,7 @@ def custom_terminator(population: List[Individual], num_generations: int, num_ev
         fitnesses = np.insert(fitnesses, index, p.fitness)
     variance = np.var(fitnesses)
 
-    if variance < TERMINATION_VARIANCE and num_generations > MIN_GENERATION:
+    if 0 < variance < TERMINATION_VARIANCE and num_generations > MIN_GENERATION:
         logger.warning('>>>>>>>>> End for variance condition.')
         return True
     elif num_generations > MAX_GENERATION:
@@ -71,6 +72,7 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
     offspring: List[Particle] = []
 
     x: Individual
+    neighbors: List[Individual]
     for x, neighbors in zip(algorithm.population, neighbors_generator):
         best_neighbour = max(neighbors)
 
@@ -80,15 +82,19 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
         velocity = (
                 particle.velocity * inertia +
                 cognitive_rate * random.random() * (particle.best_position - particle.current_position) +
-                social_rate * random.random() * (best_neighbour_particle.current_position - particle.current_position)
+                social_rate * random.random() * (best_neighbour_particle.best_position - particle.current_position)
         )
 
-        # TODO: bound velocity
-
         new_position = particle.current_position + velocity
+        norm = np.linalg.norm(velocity)
+
+        # TODO: bound velocity
+        if norm > MAXIMUM_VELOCITY:
+            # normalization_factor = norm / MAXIMUM_VELOCITY
+            velocity = (velocity / norm) * MAXIMUM_VELOCITY
 
         if algorithm.world_map.out_of_map(new_position):
-            norm = np.linalg.norm(velocity)
+
             random_coordinate_x = random.random() * norm
             if random.random() > 0.5:
                 random_coordinate_x = - random_coordinate_x
@@ -103,11 +109,6 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
             new_position = particle.current_position
             velocity = new_velocity
 
-        # the bounder filters out unwanted position values
-        # new_position_bounded = algorithm.bounder(new_position, args)
-        # new_position_bounded = new_position_bounded.astype(int)  # cast to int
-
-        # particle.velocity = velocity
         particle.move_to(new_position.astype(int))
         particle.set_velocity(velocity)
         offspring.append(particle)
@@ -145,12 +146,12 @@ def evaluate_particle(candidates: List[Particle], args) -> List[float]:
         score = args["_ec"].get_algorithm().evaluator(particle)
 
         # Update the particle best fitness, if current one is better
-        if score > particle.best_fitness:
+        if score < particle.best_fitness:
             particle.best_fitness = score
             particle.best_position = particle.current_position
 
         # Update the global position, if the current one is better
-        if score > world_map.best_fitness:
+        if score < world_map.best_fitness:
             world_map.best_fitness = score
             world_map.best_position = particle.current_position
 

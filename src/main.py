@@ -13,7 +13,8 @@ from matplotlib.figure import Figure
 from matplotlib.patches import Circle
 
 from src.algorithms.algo1 import Algo1
-from src.configuration import RESOURCE_RANGE, STARTING_POSITION, POPULATION_SIZE
+from src.configuration import RESOURCE_RANGE, STARTING_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
+    SOCIAL_RATE
 from src.custom_pso import generate_particle, evaluate_particle, custom_terminator, custom_variator, \
     custom_observer, CustomPSO
 from src.data_structures.Map import Map
@@ -28,7 +29,7 @@ matplotlib.use("Qt5Agg")
 
 if __name__ == "__main__":
     # Setup colored logs
-    coloredlogs.install(level='DEBUG', style='{', fmt='{name:15s} {levelname} {message}')
+    coloredlogs.install(level='INFO', style='{', fmt='{name:15s} {levelname} {message}')
 
     # Initialize the random seed
     rand = Random()
@@ -96,9 +97,9 @@ if __name__ == "__main__":
                                          max_evaluations=500,
                                          # statistics_file=stat_file,
                                          # individuals_file=ind_file)
-                                         inertia=1,
-                                         cognitive_rate=1,
-                                         social_rate=1
+                                         inertia=INERTIA_RATE,
+                                         cognitive_rate=COGNITIVE_RATE,
+                                         social_rate=SOCIAL_RATE
                                          )
 
     best_individual = final_population[len(final_population) - 1]

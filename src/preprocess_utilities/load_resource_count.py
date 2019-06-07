@@ -7,7 +7,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-def load_cache(path: string, fallback: Callable, *args) -> np.ndarray:
+def load_resource_count(path: string, fallback: Callable, *args) -> np.ndarray:
     try:
         resources = np.load(path)
         logger.info("Using cached matrix for path %s", path)

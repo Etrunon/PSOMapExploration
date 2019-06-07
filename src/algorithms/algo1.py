@@ -46,15 +46,15 @@ class Algo1(Algorithm):
         return self.compute_score(particle)
 
     def compute_score(self, particle: Particle) -> float:
-        res_count = self.cached_resource_count[particle.current_position[0], particle.current_position[1]]
+        res_count = self.resource_count_matrix[particle.current_position[0], particle.current_position[1]]
         distance = np.linalg.norm(particle.current_position - particle.starting_base)
         # logging.debug("res_count: " + str(res_count))
         # logging.debug("Distance: " + str(distance))
 
         square_area = (RESOURCE_RANGE * 2) ** 2
-        normalization_factor = math.atan(self.cached_resource_count.shape[0] / square_area)
+        normalization_factor = math.atan(self.resource_count_matrix.shape[0] / square_area)
         # logging.debug("math.tan(normalization_factor): " + str(math.tan(normalization_factor)))
         return distance * math.tan(normalization_factor) - res_count
 
-    def __init__(self, map: Map) -> None:
-        super().__init__(map)
+    def __init__(self, world_map: Map) -> None:
+        super().__init__(world_map)

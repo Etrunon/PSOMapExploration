@@ -21,8 +21,8 @@ def custom_terminator(population: List[Individual], num_generations: int, num_ev
     """
 
     Returns:
-        bool: True if the variance of the fitnesses of all the particles is below a given threshold
-        or if a certain number of generation is reached.
+        bool: True if the variance of the fitnesses of all the particles is greater than 0 and below a given threshold
+        after a certain number of generations or once a certain number of generations is reached.
     """
     fitnesses = []
 
@@ -161,21 +161,22 @@ def evaluate_particle(candidates: List[Particle], args) -> List[float]:
 
 
 class CustomPSO(PSO):
-    """Custom implementation of the PSO object, to allow for serialization and de-serialization for multiprocess support
+    """
+    Custom implementation of the PSO object, to allow for serialization and de-serialization for multiprocess support
     """
 
     world_map: Map = None
     _algorithm: Algorithm = None
 
-    def set_world_map(self, map: Map):
-        self.world_map = map
+    def set_world_map(self, world_map: Map):
+        self.world_map = world_map
 
     def get_world_map(self):
         assert self.world_map is not None
         return self.world_map
 
-    def set_algorithm(self, algo: Algorithm):
-        self._algorithm = algo
+    def set_algorithm(self, algorithm: Algorithm):
+        self._algorithm = algorithm
 
     def get_algorithm(self):
         assert self._algorithm is not None

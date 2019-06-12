@@ -25,7 +25,7 @@ class Map:
         self.water_map = detect_water(image_name)
         self.map_dim = self.resource_map.shape
 
-    def out_of_map(self, position: np.ndarray) -> bool:
+    def is_inside_map(self, position: np.ndarray) -> bool:
         """
         Subtract the resource range, so that each point having true as output, has a relevant square around it.
         If it did not subtract the range from the then it would be possible to compute the value for point 1,1 even

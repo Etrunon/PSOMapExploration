@@ -93,7 +93,7 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
             # normalization_factor = norm / MAXIMUM_VELOCITY
             velocity = (velocity / norm) * MAXIMUM_VELOCITY
 
-        if algorithm.world_map.out_of_map(new_position):
+        if algorithm.world_map.is_inside_map(new_position):
 
             random_coordinate_x = random.random() * norm
             if random.random() > 0.5:

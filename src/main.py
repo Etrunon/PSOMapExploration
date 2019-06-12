@@ -39,6 +39,9 @@ if __name__ == "__main__":
     world_map = Map(image_name)
     algorithm = Algo1(world_map)
 
+    # ######################################
+    # #  Plot part   #######################
+    # ######################################
     # Create a figure, because inspyred already creates one
     figure: Figure = matplotlib.pyplot.figure(2)
 
@@ -62,6 +65,10 @@ if __name__ == "__main__":
 
     # Use minimal padding inside the figure
     matplotlib.pyplot.tight_layout(pad=0)
+
+    # ######################################
+    # #  Swarm part  #######################
+    # ######################################
 
     # Instantiate the custom PSO instance
     custom_pso = CustomPSO(rand)

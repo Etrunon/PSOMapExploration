@@ -13,7 +13,7 @@ from matplotlib.figure import Figure
 from matplotlib.patches import Circle
 
 from src.algorithms.algo1 import Algo1
-from src.configuration import RESOURCE_RANGE, STARTING_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
+from src.configuration import RESOURCE_RANGE, CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
     SOCIAL_RATE
 from src.custom_pso import evaluate_particle, custom_terminator, custom_variator, \
     custom_observer, CustomPSO
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     # ax.use_sticky_edges = False
 
     # Plot the starting position as a red circle
-    start = Circle(STARTING_POSITION, 10, facecolor="red", alpha=1)
+    start = Circle(CITY_POSITION, 10, facecolor="red", alpha=1)
     ax.add_patch(start)
 
     # Use minimal padding inside the figure

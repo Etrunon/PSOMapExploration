@@ -1,7 +1,7 @@
 import sys
 
 RESOURCE_RANGE = 100
-STARTING_POSITION = (500, 600)
+CITY_POSITION = (500, 600)
 TERMINATION_VARIANCE = 200  # TODO: find optimal value
 MIN_GENERATION = 200  # TODO: find optimal value
 MAX_GENERATION = 4000  # TODO: find optimal value

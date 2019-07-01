@@ -2,13 +2,15 @@ import logging
 import math
 from _random import Random
 
+import matplotlib.pyplot as plt
+
 from src.data_structures import Map
-from src.data_structures.Map import map
+from src.data_structures.Map import map as world
 
 import numpy as np
 
 from src.algorithms.algorithm import Algorithm
-from src.configuration import RESOURCE_RANGE, MAXIMUM_VELOCITY, STARTING_POSITION
+from src.configuration import RESOURCE_RANGE, MAXIMUM_VELOCITY, CITY_POSITION
 from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
@@ -26,20 +28,19 @@ class Algo1(Algorithm):
         :return: the new particle
         """
         while True:
-            random_point = (random.randint(RESOURCE_RANGE, map.map_dim[0] - RESOURCE_RANGE),
-                            random.randint(RESOURCE_RANGE, map.map_dim[1] - RESOURCE_RANGE))
+            random_point = (random.randint(RESOURCE_RANGE, world.map_dim[0] - RESOURCE_RANGE),
+                            random.randint(RESOURCE_RANGE, world.map_dim[1] - RESOURCE_RANGE))
             # If there is earth under the chosen point break outside, else generate another point
-            if map.water_map[random_point[0]][random_point[1]] == 0:  # 0 means earth in the matrix
+            if world.water_map[random_point[0]][random_point[1]] == 0:  # 0 means earth in the matrix
                 break
 
         # ToDo inizializzare bene il vettore, perchè fatto così arriva fino a ben oltre la MAXIMUM_VELOCITY
-        velocity = (random.randint(1, MAXIMUM_VELOCITY/2), random.randint(1, MAXIMUM_VELOCITY/2))
+        velocity = (random.randint(1, MAXIMUM_VELOCITY / 2), random.randint(1, MAXIMUM_VELOCITY / 2))
 
         return Particle(starting_position=random_point,
                         velocity=np.array(velocity, np.uintc),
                         resource_range=RESOURCE_RANGE,
-                        starting_base=STARTING_POSITION)
-
+                        starting_base=CITY_POSITION)
 
     def evaluator(self, particle: Particle) -> float:
         """
@@ -73,3 +74,15 @@ class Algo1(Algorithm):
 
     def __init__(self, world_map: Map) -> None:
         super().__init__(world_map)
+
+    def plot_fitness_landscape(self):
+        landscape = np.zeros(world.map_dim)
+
+        for x in range(RESOURCE_RANGE, world.map_dim[0] - RESOURCE_RANGE):
+            for y in range(RESOURCE_RANGE, world.map_dim[1] - RESOURCE_RANGE):
+                sensor = Particle((x, y), np.array((1, 1), np.uintc), CITY_POSITION, RESOURCE_RANGE)
+                landscape[x][y] = self.compute_score(sensor)
+            print(str(x))
+
+        plt.matshow(landscape)
+        plt.show()

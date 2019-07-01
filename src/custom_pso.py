@@ -8,7 +8,7 @@ from inspyred.ec import Individual
 from inspyred.swarm import PSO
 
 from src.algorithms.algorithm import Algorithm
-from src.configuration import RESOURCE_RANGE, STARTING_POSITION, TERMINATION_VARIANCE, MIN_GENERATION, MAX_GENERATION, \
+from src.configuration import RESOURCE_RANGE, CITY_POSITION, TERMINATION_VARIANCE, MIN_GENERATION, MAX_GENERATION, \
     MAXIMUM_VELOCITY
 from src.data_structures import Map
 from src.data_structures.Particle import Particle

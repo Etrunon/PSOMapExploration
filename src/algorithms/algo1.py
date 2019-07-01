@@ -32,7 +32,8 @@ class Algo1(Algorithm):
             if map.water_map[random_point[0]][random_point[1]] == 0:  # 0 means earth in the matrix
                 break
 
-        velocity = (random.randint(1, MAXIMUM_VELOCITY), random.randint(1, MAXIMUM_VELOCITY))
+        # ToDo inizializzare bene il vettore, perchè fatto così arriva fino a ben oltre la MAXIMUM_VELOCITY
+        velocity = (random.randint(1, MAXIMUM_VELOCITY/2), random.randint(1, MAXIMUM_VELOCITY/2))
 
         return Particle(starting_position=random_point,
                         velocity=np.array(velocity, np.uintc),

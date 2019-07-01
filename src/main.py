@@ -109,12 +109,18 @@ if __name__ == "__main__":
                                          social_rate=SOCIAL_RATE
                                          )
 
-    best_individual = final_population[len(final_population) - 1]
+    best_fitness = 10000
+    best_individual = None
+    for ind in final_population:
+        print("Local Best: " + str(ind.candidate.best_fitness) + "position: " + str(ind.candidate.best_position))
+        if best_fitness > ind.candidate.best_fitness:
+            best_individual = ind
+
     best_particle: Particle = best_individual.candidate
     logger.info('Fittest individual: %s', best_individual)
 
     # Plot the best location found
-    end = Circle(best_particle.current_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
+    end = Circle(best_particle.best_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
     ax.add_patch(end)
 
     for individual in final_population:

@@ -65,25 +65,24 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
 
     if len(algorithm.archive) == 0:
         algorithm.archive = algorithm.population[:]
-    # if len(algorithm._previous_population) == 0:
-    #     algorithm._previous_population = algorithm.population[:]
 
     neighbors_generator = algorithm.topology(algorithm._random, algorithm.archive, args)
     offspring: List[Particle] = []
 
+    # noinspection PyUnusedLocal
     x: Individual
     # noinspection PyUnusedLocal
     neighbors: List[Individual]
-    for x, neighbors in zip(algorithm.population, neighbors_generator):
-        best_neighbour = max(neighbors)
 
+    for x, neighbors in zip(algorithm.population, neighbors_generator):
+
+        best_neighbour = min(neighbors, key=lambda x: x.candidate.best_fitness).candidate
         particle: Particle = x.candidate
-        best_neighbour_particle: Particle = best_neighbour.candidate
 
         new_velocity = (
                 particle.velocity * inertia +
                 cognitive_rate * random.random() * (particle.best_position - particle.current_position) +
-                social_rate * random.random() * (best_neighbour_particle.best_position - particle.current_position)
+                social_rate * random.random() * (best_neighbour.best_position - particle.current_position)
         )
 
         # Limit the velocity up to a maximum
@@ -98,8 +97,6 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
             inside = False
             while not inside:
                 angle = random.randint(0, 360)
-                print("velocity: " + str(new_velocity))
-                print("posizione sbagliata: " + str(particle.current_position + new_velocity))
 
                 # Rotate the vector
                 tmp_velocity_x = new_velocity[0] * math.cos(angle) - new_velocity[1] * math.sin(angle)
@@ -108,10 +105,8 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
                 # Assign them
                 new_velocity[0] = tmp_velocity_x
                 new_velocity[1] = tmp_velocity_y
-                print("new_velocity: " + str(new_velocity))
 
                 new_position = particle.current_position + new_velocity
-                print("ricalcolo new position" + str(new_position))
                 inside = algorithm.world_map.is_inside_map(new_position)
 
         particle.move_to(new_position.astype(int))

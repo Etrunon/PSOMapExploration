@@ -122,6 +122,9 @@ if __name__ == "__main__":
     # Plot the best location found
     end = Circle(best_particle.best_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
     ax.add_patch(end)
+    # Show the best fitness value
+    ax.annotate("{:.0f}".format(best_particle.best_fitness), best_particle.best_position, color='white',
+                fontsize='x-large', fontweight='bold')
 
     for individual in final_population:
         particle: Particle = individual.candidate
@@ -142,6 +145,4 @@ if __name__ == "__main__":
                   color=plot[0].get_color(),
                   alpha=0.3)
 
-    # Show the fitness value
-    ax.annotate("{:.0f}".format(best_individual.fitness), best_particle.current_position)
     matplotlib.pyplot.show(block=True)

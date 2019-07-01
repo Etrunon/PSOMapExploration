@@ -15,7 +15,7 @@ from matplotlib.patches import Circle
 from src.algorithms.algo1 import Algo1
 from src.configuration import RESOURCE_RANGE, STARTING_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
     SOCIAL_RATE
-from src.custom_pso import generate_particle, evaluate_particle, custom_terminator, custom_variator, \
+from src.custom_pso import evaluate_particle, custom_terminator, custom_variator, \
     custom_observer, CustomPSO
 from src.data_structures.Map import Map
 from src.data_structures.Particle import Particle
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     figure: Figure = matplotlib.pyplot.figure(1)
 
     # Run the PSO algorithm
-    final_population = custom_pso.evolve(generator=generate_particle,
+    final_population = custom_pso.evolve(generator=algorithm.generate_particle,
                                          # evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
                                          evaluator=evaluate_particle,
                                          # mp_evaluator=fitness_evaluator,

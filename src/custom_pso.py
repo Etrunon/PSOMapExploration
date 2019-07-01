@@ -94,32 +94,20 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
         new_position = particle.current_position + new_velocity
 
         if not algorithm.world_map.is_inside_map(new_position):
-
-            # random_coordinate_x = random.random() * norm
-            # if random.random() > 0.5:
-            #     random_coordinate_x = - random_coordinate_x
-
-            # print("Norm: " + str(norm))
-            # print("Random coordinate: " + str(random_coordinate_x))
-            # random_coordinate_y = math.sqrt(norm ** 2 - random_coordinate_x ** 2)
-
-            # if random.random() > 0.5:
-            #     random_coordinate_y = - random_coordinate_y
-
-            # new_velocity = np.array([random_coordinate_x, random_coordinate_y])
-
-            # new_position = particle.current_position
-            # velocity = new_velocity
-            # else:
-
             # Ricalcola un nuovo vettore velocità a caso e riprova
             inside = False
             while not inside:
                 angle = random.randint(0, 360)
                 print("velocity: " + str(new_velocity))
                 print("posizione sbagliata: " + str(particle.current_position + new_velocity))
-                new_velocity[0] = new_velocity[0] * math.cos(angle) - new_velocity[1] * math.sin(angle)
-                new_velocity[1] = new_velocity[0] * math.sin(angle) + new_velocity[1] * math.cos(angle)
+
+                # Rotate the vector
+                tmp_velocity_x = new_velocity[0] * math.cos(angle) - new_velocity[1] * math.sin(angle)
+                tmp_velocity_y = new_velocity[0] * math.sin(angle) + new_velocity[1] * math.cos(angle)
+
+                # Assign them
+                new_velocity[0] = tmp_velocity_x
+                new_velocity[1] = tmp_velocity_y
                 print("new_velocity: " + str(new_velocity))
 
                 new_position = particle.current_position + new_velocity
@@ -139,22 +127,6 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
             exit(5)
 
     return offspring
-
-
-def generate_particle(random: Random, args):
-    """
-    Position the particle randomly on the map
-    """
-    # bounder: Bounder = args["_ec"].bounder
-    algorithm: CustomPSO = args["_ec"]
-    world_map = algorithm.get_world_map()
-    random_point = (random.randint(0, world_map.map_dim[0]), random.randint(0, world_map.map_dim[1]))
-    velocity = (random.randint(1, 100), random.randint(1, 100))
-
-    return Particle(starting_position=random_point,
-                    velocity=np.array(velocity, np.uintc),
-                    resource_range=RESOURCE_RANGE,
-                    starting_base=STARTING_POSITION)
 
 
 def evaluate_particle(candidates: List[Particle], args) -> List[float]:

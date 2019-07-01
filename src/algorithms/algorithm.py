@@ -1,4 +1,5 @@
 import logging
+from _random import Random
 from typing import Tuple
 
 from src.configuration import IMAGE_NAME
@@ -30,5 +31,5 @@ class Algorithm:
     def compute_score(self, particle: Particle) -> float:
         raise Exception("Don't call the base method!")
 
-    def generate(self, map: Map, starting_base: Tuple[int, int], resource_half_square, random) -> Particle:
+    def generate_particle(random: Random, args) -> Particle:
         raise Exception("Don't call the base method!")

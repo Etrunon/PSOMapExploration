@@ -1,12 +1,14 @@
 import logging
 import math
-from typing import Tuple
+from _random import Random
+
+from src.data_structures import Map
+from src.data_structures.Map import map
 
 import numpy as np
 
 from src.algorithms.algorithm import Algorithm
-from src.configuration import RESOURCE_RANGE
-from src.data_structures.Map import Map
+from src.configuration import RESOURCE_RANGE, MAXIMUM_VELOCITY, STARTING_POSITION
 from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
@@ -14,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class Algo1(Algorithm):
 
-    def generate(self, map: Map, starting_base: Tuple[int, int], resource_half_square, random) -> Particle:
+    def generate_particle(self, random: Random, args) -> Particle:
         """
         Take a point on earth and returns its position plus the number of resources within the boundary box.
         :param resource_half_square: range in which the particle will be looking for resources
@@ -24,14 +26,19 @@ class Algo1(Algorithm):
         :return: the new particle
         """
         while True:
-            random_point = (random.randint(0, map.map_dim[0]), random.randint(0, map.map_dim[1]))
+            random_point = (random.randint(RESOURCE_RANGE, map.map_dim[0] - RESOURCE_RANGE),
+                            random.randint(RESOURCE_RANGE, map.map_dim[1] - RESOURCE_RANGE))
             # If there is earth under the chosen point break outside, else generate another point
             if map.water_map[random_point[0]][random_point[1]] == 0:  # 0 means earth in the matrix
                 break
 
-        # print("Random point: " + str(r_point))
-        return Particle((443, 533), np.zeros(2), starting_base, resource_half_square)
-        # return Particle(random_point, 0, starting_base, resource_range)
+        velocity = (random.randint(1, MAXIMUM_VELOCITY), random.randint(1, MAXIMUM_VELOCITY))
+
+        return Particle(starting_position=random_point,
+                        velocity=np.array(velocity, np.uintc),
+                        resource_range=RESOURCE_RANGE,
+                        starting_base=STARTING_POSITION)
+
 
     def evaluator(self, particle: Particle) -> float:
         """

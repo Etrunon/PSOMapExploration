@@ -72,6 +72,7 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
     offspring: List[Particle] = []
 
     x: Individual
+    # noinspection PyUnusedLocal
     neighbors: List[Individual]
     for x, neighbors in zip(algorithm.population, neighbors_generator):
         best_neighbour = max(neighbors)
@@ -79,39 +80,63 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
         particle: Particle = x.candidate
         best_neighbour_particle: Particle = best_neighbour.candidate
 
-        velocity = (
+        new_velocity = (
                 particle.velocity * inertia +
                 cognitive_rate * random.random() * (particle.best_position - particle.current_position) +
                 social_rate * random.random() * (best_neighbour_particle.best_position - particle.current_position)
         )
 
-        new_position = particle.current_position + velocity
-        norm = np.linalg.norm(velocity)
-
-        # TODO: bound velocity
+        # Limit the velocity up to a maximum
+        norm = np.linalg.norm(new_velocity)
         if norm > MAXIMUM_VELOCITY:
-            # normalization_factor = norm / MAXIMUM_VELOCITY
-            velocity = (velocity / norm) * MAXIMUM_VELOCITY
+            new_velocity = (new_velocity / norm) * MAXIMUM_VELOCITY
 
-        if algorithm.world_map.is_inside_map(new_position):
+        new_position = particle.current_position + new_velocity
 
-            random_coordinate_x = random.random() * norm
-            if random.random() > 0.5:
-                random_coordinate_x = - random_coordinate_x
+        if not algorithm.world_map.is_inside_map(new_position):
 
-            random_coordinate_y = math.sqrt(norm ** 2 - random_coordinate_x ** 2)
+            # random_coordinate_x = random.random() * norm
+            # if random.random() > 0.5:
+            #     random_coordinate_x = - random_coordinate_x
 
-            if random.random() > 0.5:
-                random_coordinate_y = - random_coordinate_y
+            # print("Norm: " + str(norm))
+            # print("Random coordinate: " + str(random_coordinate_x))
+            # random_coordinate_y = math.sqrt(norm ** 2 - random_coordinate_x ** 2)
 
-            new_velocity = np.array([random_coordinate_x, random_coordinate_y])
+            # if random.random() > 0.5:
+            #     random_coordinate_y = - random_coordinate_y
 
-            new_position = particle.current_position
-            velocity = new_velocity
+            # new_velocity = np.array([random_coordinate_x, random_coordinate_y])
+
+            # new_position = particle.current_position
+            # velocity = new_velocity
+            # else:
+
+            # Ricalcola un nuovo vettore velocità a caso e riprova
+            inside = False
+            while not inside:
+                angle = random.randint(0, 360)
+                print("velocity: " + str(new_velocity))
+                print("posizione sbagliata: " + str(particle.current_position + new_velocity))
+                new_velocity[0] = new_velocity[0] * math.cos(angle) - new_velocity[1] * math.sin(angle)
+                new_velocity[1] = new_velocity[0] * math.sin(angle) + new_velocity[1] * math.cos(angle)
+                print("new_velocity: " + str(new_velocity))
+
+                new_position = particle.current_position + new_velocity
+                print("ricalcolo new position" + str(new_position))
+                inside = algorithm.world_map.is_inside_map(new_position)
 
         particle.move_to(new_position.astype(int))
-        particle.set_velocity(velocity)
+        particle.set_velocity(new_velocity)
         offspring.append(particle)
+
+        if particle.current_position[0] > 1024:
+            print("cpso wtf particle x over map \n" + str(particle.current_position[0]))
+            print("cpso wtf new position" + str(new_position))
+            exit(4)
+        if particle.current_position[1] > 1024:
+            print("cpso wtf particle y over map \n" + str(particle.current_position[1]))
+            exit(5)
 
     return offspring
 

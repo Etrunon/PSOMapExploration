@@ -120,10 +120,12 @@ if __name__ == "__main__":
     logger.info('Fittest individual: %s', best_individual)
 
     # Plot the best location found
-    end = Circle(best_individual.best_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
+    # Flip the coordinates because somehow they're flipped also when loading the initial matrix
+    flipped_position = (best_individual.best_position[1], best_individual.best_position[0])
+    end = Circle(flipped_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
     ax.add_patch(end)
     # Show the best fitness value
-    ax.annotate("{:.0f}".format(best_individual.best_fitness), best_individual.best_position, color='white',
+    ax.annotate("{:.0f}".format(best_individual.best_fitness), flipped_position, color='white',
                 fontsize='x-large', fontweight='bold')
 
     for individual in final_population:
@@ -131,13 +133,13 @@ if __name__ == "__main__":
         # Extrapolate two arrays with x and y points with all the movements of the particle
         x, y = zip(*particle.movements)
         # Plot the list of points
-        plot = ax.plot(x, y)
+        plot = ax.plot(y, x)
         logger.debug("x movements %d", len(x))
 
         # Plot arrows for point to point
-        ax.quiver(x[:-1], y[:-1],
-                  np.subtract(x[1:], x[:-1]),
-                  np.subtract(y[1:], y[:-1]),
+        ax.quiver(y[:-1], x[:-1],
+                  np.subtract(x[:-1], x[1:]),
+                  np.subtract(y[:-1], y[1:]),
                   scale_units='xy',
                   angles='xy',
                   scale=1,

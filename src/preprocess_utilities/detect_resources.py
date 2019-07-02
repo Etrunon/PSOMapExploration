@@ -47,6 +47,7 @@ def detect_resource(image_name) -> np.ndarray:
     # Retrieve the image and convert it to an array
     img = Image.open('data/examples/' + image_name)
     cached_matrix_path = 'data/cached_matrices/{}_resources.npy'.format(image_name.replace('.png', ''))
+    logger.debug('Detecting resources on map')
 
     try:
         resources_matrix = np.load(cached_matrix_path)

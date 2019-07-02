@@ -52,7 +52,7 @@ if __name__ == "__main__":
     matplotlib.pyplot.imshow(Image.open('data/examples/' + image_name))
 
     # Save a reference to the axes object
-    ax: Axes = figure.add_subplot(111)
+    ax: Axes = figure.add_subplot(1, 1, 1)
     # Force an aspect for the axes
     ax.set_aspect('equal')
 
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     custom_pso.observer = [inspyred.ec.observers.plot_observer, custom_observer]
 
     # Create a new figure, to be used by inspyred plot_observer
-    figure: Figure = matplotlib.pyplot.figure(1)
+    figure_observer: Figure = matplotlib.pyplot.figure(1)
 
     # Run the PSO algorithm
     final_population = custom_pso.evolve(generator=algorithm.generate_particle,
@@ -131,8 +131,10 @@ if __name__ == "__main__":
         particle: Particle = individual.candidate
         # Extrapolate two arrays with x and y points with all the movements of the particle
         x, y = zip(*particle.movements)
+
         # Plot the list of points
-        plot = ax.plot(x, y, linewidth=0.2)
+        plot = ax.plot(x, y, linewidth=0.2, label=particle.id)
+
         logger.debug("x movements %d", len(x))
 
         # Plot arrows for point to point
@@ -145,5 +147,13 @@ if __name__ == "__main__":
                   width=0.005,
                   color=plot[0].get_color(),
                   alpha=0.3)
+
+    # ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    ax.legend(bbox_to_anchor=(1, 1), loc='upper left', markerscale=10)
+
+    figManager = figure.canvas.manager.window.showMaximized()
+    # figManager.window.showMaximized()
+
+
 
     matplotlib.pyplot.show(block=True)

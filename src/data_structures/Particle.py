@@ -28,7 +28,7 @@ class Particle:
     movements: np.ndarray = np.zeros([0, 2])  #: Array containing all the positions
     velocities: np.ndarray = np.zeros([0, 2])  #: Array containing all the velocities
 
-    def __init__(self, starting_position, velocity: np.ndarray, starting_base, resource_range):
+    def __init__(self, starting_position, velocity: np.ndarray, starting_base, resource_range, id):
         self.current_position = np.array([starting_position[0], starting_position[1]])
         self.velocity = velocity
         self.best_position = self.current_position
@@ -37,6 +37,7 @@ class Particle:
         self.starting_base = np.array([starting_base[0], starting_base[1]])
         self.resource_half_square = resource_range
         self.resource_radius = resource_range
+        self.id = id
 
     def count_resources(self, map: Map):
         """

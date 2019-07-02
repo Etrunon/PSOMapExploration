@@ -12,6 +12,7 @@ from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
 
+id = -1
 
 class Algo1(Algorithm):
 
@@ -24,6 +25,8 @@ class Algo1(Algorithm):
         :param random: random generator
         :return: the new particle
         """
+        global id
+
         while True:
             random_point = (random.randint(RESOURCE_RANGE, world.map_dim[0] - RESOURCE_RANGE),
                             random.randint(RESOURCE_RANGE, world.map_dim[1] - RESOURCE_RANGE))
@@ -34,10 +37,13 @@ class Algo1(Algorithm):
         # ToDo inizializzare bene il vettore, perchè fatto così arriva fino a ben oltre la MAXIMUM_VELOCITY
         velocity = (random.randint(1, MAXIMUM_VELOCITY / 2), random.randint(1, MAXIMUM_VELOCITY / 2))
 
+        id += 1
+
         return Particle(starting_position=random_point,
                         velocity=np.array(velocity, np.uintc),
                         resource_range=RESOURCE_RANGE,
-                        starting_base=CITY_POSITION)
+                        starting_base=CITY_POSITION,
+                        id=id)
 
     def evaluator(self, particle: Particle) -> float:
         """

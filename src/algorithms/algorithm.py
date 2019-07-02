@@ -1,8 +1,7 @@
 import logging
 from _random import Random
-from typing import Tuple
 
-from src.configuration import IMAGE_NAME
+from src.configuration import IMAGE_NAME, RESOURCE_RANGE, CITY_POSITION
 from src.data_structures import Map
 from src.data_structures.Particle import Particle
 from src.preprocess_utilities import load_resource_count
@@ -17,7 +16,8 @@ class Algorithm:
     resource_count_path = ''
 
     def __init__(self, world_map: Map) -> None:
-        self.resource_count_path = 'data/cached_matrices/' + IMAGE_NAME.replace('.png', '') + '_resource_count.npy'
+        self.resource_count_path = 'data/cached_matrices/{}_resource_count_{}_{}x{}.npy'. \
+            format(IMAGE_NAME.replace('.png', ''), RESOURCE_RANGE, CITY_POSITION[0], CITY_POSITION[1])
         self.resource_count_matrix = load_resource_count.load_resource_count(self.resource_count_path,
                                                                              calculate_resources,
                                                                              world_map)

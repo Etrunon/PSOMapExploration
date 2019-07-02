@@ -2,15 +2,12 @@ import logging
 import math
 from _random import Random
 
-import matplotlib.pyplot as plt
-
-from src.data_structures import Map
-from src.data_structures.Map import map as world
-
 import numpy as np
 
 from src.algorithms.algorithm import Algorithm
 from src.configuration import RESOURCE_RANGE, MAXIMUM_VELOCITY, CITY_POSITION
+from src.data_structures import Map
+from src.data_structures.Map import map as world
 from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
@@ -75,14 +72,16 @@ class Algo1(Algorithm):
     def __init__(self, world_map: Map) -> None:
         super().__init__(world_map)
 
-    def plot_fitness_landscape(self):
+    def get_fitness_landscape(self) -> np.ndarray:
+        """
+        Returns:
+            The fitness landscape as two dimensional array
+        """
         landscape = np.zeros(world.map_dim)
 
         for x in range(RESOURCE_RANGE, world.map_dim[0] - RESOURCE_RANGE):
             for y in range(RESOURCE_RANGE, world.map_dim[1] - RESOURCE_RANGE):
                 sensor = Particle((x, y), np.array((1, 1), np.uintc), CITY_POSITION, RESOURCE_RANGE)
                 landscape[x][y] = self.compute_score(sensor)
-            print(str(x))
 
-        plt.matshow(landscape)
-        plt.show()
+        return landscape

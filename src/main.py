@@ -131,18 +131,18 @@ if __name__ == "__main__":
     for individual in final_population:
         particle: Particle = individual.candidate
         # Extrapolate two arrays with x and y points with all the movements of the particle
-        x, y = zip(*particle.movements)
+        y, x = zip(*particle.movements)
         # Plot the list of points
-        plot = ax.plot(y, x)
+        plot = ax.plot(x, y, linewidth=0.2)
         logger.debug("x movements %d", len(x))
 
         # Plot arrows for point to point
-        ax.quiver(y[:-1], x[:-1],
-                  np.subtract(x[:-1], x[1:]),
-                  np.subtract(y[:-1], y[1:]),
+        ax.quiver(x[:-1], y[:-1],
+                  np.subtract(x[1:], x[:-1]),
+                  np.subtract(y[1:], y[:-1]),
                   scale_units='xy',
                   angles='xy',
-                  scale=1,
+                  scale=10,
                   width=0.005,
                   color=plot[0].get_color(),
                   alpha=0.3)

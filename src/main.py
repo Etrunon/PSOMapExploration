@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     # Initialize the random seed
     rand = Random()
-    rand.seed(1)  # TODO: set to 1 for debug purposes, remove once ready to take off!
+    # rand.seed(1)  # TODO: set to 1 for debug purposes, remove once ready to take off!
 
     image_name = sys.argv[1]
     world_map = Map(image_name)

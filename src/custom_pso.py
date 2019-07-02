@@ -31,10 +31,10 @@ def custom_terminator(population: List[Individual], num_generations: int, num_ev
     variance = np.var(fitnesses)
 
     if 0 < variance < TERMINATION_VARIANCE and num_generations > MIN_GENERATION:
-        logger.warning('>>>>>>>>> End for variance condition.')
+        logger.warning('>>>>>>>>> End for variance condition. Total Evaluation: ' + str(num_evaluations))
         return True
     elif num_generations > MAX_GENERATION:
-        logger.warning('>>>>>>>>> End for max generations reached.')
+        logger.warning('>>>>>>>>> End for max generations reached. Total Evaluation: ' + str(num_evaluations))
         return True
     else:
         return False

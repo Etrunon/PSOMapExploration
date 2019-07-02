@@ -3,8 +3,7 @@ import string
 import numpy as np
 
 from src.configuration import IMAGE_NAME, RESOURCE_RANGE
-from src.preprocess_utilities.detect_resources import detect_resource
-from src.preprocess_utilities.detect_water import detect_water
+from src.preprocess_utilities.detect_resources import detect_resources
 
 
 class Map:
@@ -21,8 +20,8 @@ class Map:
     best_fitness: float = 0  #: Value of the fitness in the best position
 
     def __init__(self, image_name: string):
-        self.resource_map = detect_resource(image_name)
-        self.water_map = detect_water(image_name)
+        self.resource_map = detect_resources(image_name)
+        self.water_map = detect_resources(image_name, water=True)
         self.map_dim = self.resource_map.shape
 
     def is_inside_map(self, position: np.ndarray) -> bool:

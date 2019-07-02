@@ -120,18 +120,17 @@ if __name__ == "__main__":
     logger.info('Fittest individual: %s', best_individual)
 
     # Plot the best location found
-    # Flip the coordinates because somehow they're flipped also when loading the initial matrix
-    flipped_position = (best_individual.best_position[1], best_individual.best_position[0])
-    end = Circle(flipped_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
+    best_position = (best_individual.best_position[0], best_individual.best_position[1])
+    end = Circle(best_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
     ax.add_patch(end)
     # Show the best fitness value
-    ax.annotate("{:.0f}".format(best_individual.best_fitness), flipped_position, color='white',
+    ax.annotate("{:.0f}".format(best_individual.best_fitness), best_position, color='white',
                 fontsize='x-large', fontweight='bold')
 
     for individual in final_population:
         particle: Particle = individual.candidate
         # Extrapolate two arrays with x and y points with all the movements of the particle
-        y, x = zip(*particle.movements)
+        x, y = zip(*particle.movements)
         # Plot the list of points
         plot = ax.plot(x, y, linewidth=0.2)
         logger.debug("x movements %d", len(x))

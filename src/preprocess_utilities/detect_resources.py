@@ -18,16 +18,14 @@ resourceColours = {
 }
 
 
-def __highlight_resource(res_matrix, image, resName, on_map):
+def __highlight_resource(res_matrix, image, resName, resourcePriority):
 	searching = resourceColours[resName]
 	# Scan the image looking for the color
 	for i in range(0, image.shape[0]):
 		for j in range(0, image.shape[1]):
 			pixel = image[i][j]
 			if pixel[0] == searching[0] and pixel[1] == searching[1] and pixel[2] == searching[2]:
-				res_matrix[i][j] = on_map
-				res_matrix[i][j] = on_map
-				res_matrix[i][j] = on_map
+				res_matrix[i][j] = resourcePriority
 
 	return res_matrix
 
@@ -58,7 +56,7 @@ def detect_resource(image_name) -> np.ndarray:
 		# Find all resources and put them on the matrix
 		result = np.zeros((img_array.shape[0], img_array.shape[1]))
 		for i in range(0, len(resources)):
-			__highlight_resource(result, img_array, resources[i], i + 1)
+			__highlight_resource(result, img_array, resources[i], 1)
 			print('End processing of ' + resources[i])
 
 		np.save(image_path, result)

@@ -114,16 +114,16 @@ if __name__ == "__main__":
     for ind in final_population:
         print("Local Best: " + str(ind.candidate.best_fitness) + "position: " + str(ind.candidate.best_position))
         if best_fitness > ind.candidate.best_fitness:
-            best_individual = ind
+            best_individual = ind.candidate
+            best_fitness = ind.candidate.best_fitness
 
-    best_particle: Particle = best_individual.candidate
     logger.info('Fittest individual: %s', best_individual)
 
     # Plot the best location found
-    end = Circle(best_particle.best_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
+    end = Circle(best_individual.best_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
     ax.add_patch(end)
     # Show the best fitness value
-    ax.annotate("{:.0f}".format(best_particle.best_fitness), best_particle.best_position, color='white',
+    ax.annotate("{:.0f}".format(best_individual.best_fitness), best_individual.best_position, color='white',
                 fontsize='x-large', fontweight='bold')
 
     for individual in final_population:

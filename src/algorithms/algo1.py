@@ -52,12 +52,6 @@ class Algo1(Algorithm):
         return self.compute_score(particle)
 
     def compute_score(self, particle: Particle) -> float:
-        if particle.current_position[0] > 1024:
-            print("wtf particle x over map. \n" + str(particle.current_position[0]))
-            exit(2)
-        if particle.current_position[1] > 1024:
-            print("wtf2 particle y over map. \n" + str(particle.current_position[1]))
-            exit(3)
 
         res_count = self.resource_count_matrix[particle.current_position[0], particle.current_position[1]]
         distance = np.linalg.norm(particle.current_position - particle.starting_base)

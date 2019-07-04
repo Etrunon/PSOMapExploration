@@ -113,14 +113,6 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
         particle.set_velocity(new_velocity)
         offspring.append(particle)
 
-        if particle.current_position[0] > 1024:
-            print("cpso wtf particle x over map \n" + str(particle.current_position[0]))
-            print("cpso wtf new position" + str(new_position))
-            exit(4)
-        if particle.current_position[1] > 1024:
-            print("cpso wtf particle y over map \n" + str(particle.current_position[1]))
-            exit(5)
-
     return offspring
 
 

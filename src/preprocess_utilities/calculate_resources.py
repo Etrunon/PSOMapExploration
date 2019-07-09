@@ -5,7 +5,7 @@ from typing import Tuple
 import numpy as np
 
 from src.configuration import RESOURCE_RANGE
-from src.data_structures.Map import Map, map
+from src.data_structures.Map import world_map
 from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ def count_resources(x: int, y: int) -> Tuple[int, int, int]:
         logger.info("Calculating on coordinates x = %d, y = %d...", x, y)
     # Perform the computation
     particle = Particle((x, y), 0, (0, 0), resource_range=RESOURCE_RANGE)
-    return particle.count_resources(map), x, y
+    return particle.count_resources(world_map), x, y
 
 
 def result_callback(args):
@@ -26,8 +26,8 @@ def result_callback(args):
     result[x][y] = resources
 
 
-def calculate_resources(map: Map) -> np.array:
-    dimension_x, dimension_y = map.map_dim
+def calculate_resources() -> np.array:
+    dimension_x, dimension_y = world_map.map_dim
 
     global result
     # Initialize an empty list of list

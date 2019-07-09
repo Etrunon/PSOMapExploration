@@ -17,7 +17,7 @@ from src.configuration import RESOURCE_RANGE, CITY_POSITION, POPULATION_SIZE, CO
     SOCIAL_RATE
 from src.custom_pso import evaluate_particle, custom_terminator, custom_variator, \
     custom_observer, CustomPSO
-from src.data_structures.Map import Map
+from src.data_structures.Map import world_map as world_map
 from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
@@ -36,8 +36,7 @@ if __name__ == "__main__":
     # rand.seed(1)  # TODO: set to 1 for debug purposes, remove once ready to take off!
 
     image_name = sys.argv[1]
-    world_map = Map(image_name)
-    algorithm = Algo1(world_map)
+    algorithm = Algo1()
 
     # ######################################
     # #  Plot part   #######################

@@ -15,7 +15,7 @@ result = None
 def count_resources(x: int, y: int) -> Tuple[int, int, int]:
     if x % 100 == 0 and y % 600 == 0:
         logger.debug("Calculating on coordinates x = %d, y = %d...", x, y)
-    particle = Particle((x, y), 0, (0, 0), resource_range=RESOURCE_RANGE)
+    particle = Particle((x, y), 0, (0, 0), resource_range=RESOURCE_RANGE, id=1)
     return particle.count_resources(map), x, y
 
 
@@ -30,12 +30,18 @@ def calculate_resources(map: Map) -> np.array:
     global result
     result = [[None for x in range(dimension_y)] for x in range(dimension_x)]
 
+    async_results = []
+
     with Pool() as pool:
         for i in range(0, dimension_x):
             for j in range(0, dimension_y):
                 async = pool.apply_async(count_resources,
                                          (i, j),
                                          callback=result_callback)
+                async_results.append(async)
+
+        for async_result in async_results:
+            async_result.get()
 
         pool.close()
         pool.join()

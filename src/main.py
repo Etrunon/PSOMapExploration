@@ -110,11 +110,10 @@ if __name__ == "__main__":
 
     best_individual: Particle = None
     for ind in final_population:
-        print("Local Best: " + str(ind.candidate.best_fitness) + "position: " + str(ind.candidate.best_position))
         if world_map.best_fitness >= ind.candidate.best_fitness:
             best_individual = ind.candidate
 
-    logger.info('Fittest individual: %s', best_individual)
+    logger.info('Fittest individual: \n%s', best_individual)
 
     # Plot the best location found
     # Flip the coordinates because somehow they're flipped also when loading the initial matrix

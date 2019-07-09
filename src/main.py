@@ -109,13 +109,11 @@ if __name__ == "__main__":
                                          social_rate=SOCIAL_RATE
                                          )
 
-    best_fitness = 10000
-    best_individual = None
+    best_individual: Particle = None
     for ind in final_population:
         print("Local Best: " + str(ind.candidate.best_fitness) + "position: " + str(ind.candidate.best_position))
-        if best_fitness > ind.candidate.best_fitness:
+        if world_map.best_fitness >= ind.candidate.best_fitness:
             best_individual = ind.candidate
-            best_fitness = ind.candidate.best_fitness
 
     logger.info('Fittest individual: %s', best_individual)
 

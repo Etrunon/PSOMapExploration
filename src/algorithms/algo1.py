@@ -75,7 +75,7 @@ class Algo1(Algorithm):
 
         for x in range(RESOURCE_RANGE, world.map_dim[0] - RESOURCE_RANGE):
             for y in range(RESOURCE_RANGE, world.map_dim[1] - RESOURCE_RANGE):
-                sensor = Particle((x, y), np.array((1, 1), np.uintc), CITY_POSITION, RESOURCE_RANGE)
+                sensor = Particle((x, y), np.array((1, 1), np.uintc), CITY_POSITION, RESOURCE_RANGE, "sensor")
                 landscape[x][y] = self.compute_score(sensor)
 
         return landscape

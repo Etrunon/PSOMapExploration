@@ -27,7 +27,8 @@ matplotlib.pyplot.style.use("seaborn-bright")
 # Set the backend used by matplotlib
 matplotlib.use("Qt5Agg")
 
-if __name__ == "__main__":
+
+def main():
     # Setup colored logs
     coloredlogs.install(level='INFO', style='{', fmt='{name:15s} {levelname} {message}')
 
@@ -150,6 +151,10 @@ if __name__ == "__main__":
     figManager = figure.canvas.manager.window.showMaximized()
     # figManager.window.showMaximized()
 
-
-
     matplotlib.pyplot.show(block=True)
+
+    return best_individual
+
+
+if __name__ == "__main__":
+    main()

@@ -43,4 +43,4 @@ class Map:
         return False
 
 
-map: Map = Map(image_name=IMAGE_NAME)
+world_map: Map = Map(image_name=IMAGE_NAME)

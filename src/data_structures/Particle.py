@@ -100,8 +100,8 @@ class Particle:
         self.velocity = new_velocity
 
     def __str__(self) -> str:
-        return "current_position: " + str(self.current_position) + " \n" + \
-               "\tvelocity: " + str(self.velocity) + " \n" + \
-               "\tlocal_best: " + str(self.best_position) + " \n" + \
-               "\tstarting_base: " + str(self.starting_base) + " \n" + \
-               "\tresource_range : " + str(self.resource_half_square) + " \n"
+        return "\t\t\tcurrent_position: " + str(self.current_position) + " \n" + \
+               "\t\t\tvelocity: " + str(self.velocity) + " \n" + \
+               "\t\t\tlocal_best: " + str(self.best_position) + " \n" + \
+               "\t\t\tstarting_base: " + str(self.starting_base) + " \n" + \
+               "\t\t\tresource_range: " + str(self.resource_half_square) + " \n"

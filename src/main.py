@@ -17,7 +17,7 @@ from src.configuration import RESOURCE_RANGE, CITY_POSITION, POPULATION_SIZE, CO
     SOCIAL_RATE
 from src.custom_pso import evaluate_particle, custom_terminator, custom_variator, \
     custom_observer, CustomPSO
-from src.data_structures.Map import Map
+from src.data_structures.Map import world_map as world_map
 from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
@@ -33,11 +33,10 @@ if __name__ == "__main__":
 
     # Initialize the random seed
     rand = Random()
-    rand.seed(1)  # TODO: set to 1 for debug purposes, remove once ready to take off!
+    # rand.seed(1)  # TODO: set to 1 for debug purposes, remove once ready to take off!
 
     image_name = sys.argv[1]
-    world_map = Map(image_name)
-    algorithm = Algo1(world_map)
+    algorithm = Algo1()
 
     # ######################################
     # #  Plot part   #######################
@@ -109,15 +108,12 @@ if __name__ == "__main__":
                                          social_rate=SOCIAL_RATE
                                          )
 
-    best_fitness = 10000
-    best_individual = None
+    best_individual: Particle = None
     for ind in final_population:
-        print("Local Best: " + str(ind.candidate.best_fitness) + "position: " + str(ind.candidate.best_position))
-        if best_fitness > ind.candidate.best_fitness:
+        if world_map.best_fitness >= ind.candidate.best_fitness:
             best_individual = ind.candidate
-            best_fitness = ind.candidate.best_fitness
 
-    logger.info('Fittest individual: %s', best_individual)
+    logger.info('Fittest individual: \n%s', best_individual)
 
     # Plot the best location found
     best_position = (best_individual.best_position[0], best_individual.best_position[1])

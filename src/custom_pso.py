@@ -31,10 +31,10 @@ def custom_terminator(population: List[Individual], num_generations: int, num_ev
     variance = np.var(fitnesses)
 
     if 0 < variance < TERMINATION_VARIANCE and num_generations > MIN_GENERATION:
-        logger.warning('>>>>>>>>> End for variance condition.')
+        logger.warning('>>>>>>>>> End for variance condition. Total Evaluation: ' + str(num_evaluations))
         return True
     elif num_generations > MAX_GENERATION:
-        logger.warning('>>>>>>>>> End for max generations reached.')
+        logger.warning('>>>>>>>>> End for max generations reached. Total Evaluation: ' + str(num_evaluations))
         return True
     else:
         return False
@@ -112,14 +112,6 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
         particle.move_to(new_position.astype(int))
         particle.set_velocity(new_velocity)
         offspring.append(particle)
-
-        if particle.current_position[0] > 1024:
-            print("cpso wtf particle x over map \n" + str(particle.current_position[0]))
-            print("cpso wtf new position" + str(new_position))
-            exit(4)
-        if particle.current_position[1] > 1024:
-            print("cpso wtf particle y over map \n" + str(particle.current_position[1]))
-            exit(5)
 
     return offspring
 

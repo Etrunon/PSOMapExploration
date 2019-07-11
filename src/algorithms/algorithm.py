@@ -29,5 +29,5 @@ class Algorithm:
     def compute_score(self, particle: Particle) -> float:
         raise Exception("Don't call the base method!")
 
-    def generate_particle(random: Random, args) -> Particle:
+    def generate_particle(self, random: Random, args) -> Particle:
         raise Exception("Don't call the base method!")

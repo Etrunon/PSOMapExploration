@@ -1,5 +1,4 @@
 import logging
-import sys
 from random import Random
 
 import coloredlogs
@@ -14,8 +13,8 @@ from matplotlib.patches import Circle
 
 from src.algorithms.algo1 import Algo1
 from src.configuration import RESOURCE_RANGE, CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
-    SOCIAL_RATE
-from src.custom_pso import evaluate_particle, custom_terminator, custom_variator, \
+    SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE
+from src.custom_pso import evaluate_particle, custom_variator, \
     custom_observer, CustomPSO
 from src.data_structures.Map import world_map as world_map
 from src.data_structures.Particle import Particle
@@ -28,57 +27,53 @@ matplotlib.pyplot.style.use("seaborn-bright")
 matplotlib.use("Qt5Agg")
 
 
-def main():
-    # Setup colored logs
-    coloredlogs.install(level='INFO', style='{', fmt='{name:15s} {levelname} {message}')
+def main(rand: Random, min_generations, termination_variance, show_gui=True):
 
-    # Initialize the random seed
-    rand = Random()
-    # rand.seed(1)  # TODO: set to 1 for debug purposes, remove once ready to take off!
-
-    image_name = sys.argv[1]
-    algorithm = Algo1()
+    # Observers (custom logger that are notified while the algorithm runs)
+    observers = [custom_observer]
 
     # ######################################
     # #  Plot part   #######################
     # ######################################
-    # Create a figure, because inspyred already creates one
-    figure: Figure = matplotlib.pyplot.figure(2)
+    if show_gui:
+        # Create a figure, because inspyred library already creates one
+        figure: Figure = matplotlib.pyplot.figure(2)
 
-    # Plot a grid in the figure
-    pyplot.grid()
+        # Plot a grid in the figure
+        pyplot.grid()
 
-    # Use the map as background
-    matplotlib.pyplot.imshow(Image.open('data/examples/' + image_name))
+        # Use the map as background
+        matplotlib.pyplot.imshow(Image.open('data/examples/{}'.format(IMAGE_NAME)))
 
-    # Save a reference to the axes object
-    ax: Axes = figure.add_subplot(1, 1, 1)
-    # Force an aspect for the axes
-    ax.set_aspect('equal')
+        # Save a reference to the axes object
+        ax: Axes = figure.add_subplot(1, 1, 1)
+        # Force an aspect for the axes
+        ax.set_aspect('equal')
 
-    # TODO: try out if this helps
-    # ax.use_sticky_edges = False
+        # Plot the starting position as a red circle
+        start = Circle(CITY_POSITION, 10, facecolor="red", alpha=1)
+        ax.add_patch(start)
 
-    # Plot the starting position as a red circle
-    start = Circle(CITY_POSITION, 10, facecolor="red", alpha=1)
-    ax.add_patch(start)
+        # Use minimal padding inside the figure
+        matplotlib.pyplot.tight_layout(pad=0)
 
-    # Use minimal padding inside the figure
-    matplotlib.pyplot.tight_layout(pad=0)
+        # Create a new figure, to be used by inspyred plot_observer
+        figure_observer: Figure = matplotlib.pyplot.figure(1)
+
+        # Add plot observer to draw the fitness graph
+        observers.append(inspyred.ec.observers.plot_observer)
 
     # ######################################
     # #  Swarm part  #######################
     # ######################################
 
-    # Instantiate the custom PSO instance
-    custom_pso = CustomPSO(rand)
+    algorithm = Algo1()
 
-    # Set the map and the algorithm
-    custom_pso.set_world_map(world_map)
-    custom_pso.set_algorithm(algorithm)
+    # Instantiate the custom PSO instance with the specific algorithm
+    custom_pso = CustomPSO(rand, algorithm, min_generations)
 
     # Set custom properties for the PSO instance
-    custom_pso.terminator = custom_terminator
+    custom_pso.terminator = custom_pso.custom_terminator
 
     # Set the custom variator to move each particle in the swarm
     custom_pso.variator = custom_variator
@@ -86,11 +81,8 @@ def main():
     # Set the topology to specify how neighbours are found
     custom_pso.topology = inspyred.swarm.topologies.star_topology
 
-    # Observers (custom logger that are notified while the algorithm runs)
-    custom_pso.observer = [inspyred.ec.observers.plot_observer, custom_observer]
-
-    # Create a new figure, to be used by inspyred plot_observer
-    figure_observer: Figure = matplotlib.pyplot.figure(1)
+    # set the observers
+    custom_pso.observer = observers
 
     # Run the PSO algorithm
     final_population = custom_pso.evolve(generator=algorithm.generate_particle,
@@ -116,45 +108,52 @@ def main():
 
     logger.info('Fittest individual: \n%s', best_individual)
 
-    # Plot the best location found
-    best_position = (best_individual.best_position[0], best_individual.best_position[1])
-    end = Circle(best_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
-    ax.add_patch(end)
-    # Show the best fitness value
-    ax.annotate("{:.0f}".format(best_individual.best_fitness), best_position, color='white',
-                fontsize='x-large', fontweight='bold')
+    if show_gui:
+        # Plot the best location found
+        best_position = (best_individual.best_position[0], best_individual.best_position[1])
 
-    for individual in final_population:
-        particle: Particle = individual.candidate
-        # Extrapolate two arrays with x and y points with all the movements of the particle
-        x, y = zip(*particle.movements)
+        end = Circle(best_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
+        ax.add_patch(end)
+        # Show the best fitness value
+        ax.annotate("{:.0f}".format(best_individual.best_fitness), best_position, color='white',
+                    fontsize='x-large', fontweight='bold')
 
-        # Plot the list of points
-        plot = ax.plot(x, y, linewidth=0.2, label=particle.id)
+        for individual in final_population:
+            particle: Particle = individual.candidate
+            # Extrapolate two arrays with x and y points with all the movements of the particle
+            x, y = zip(*particle.movements)
 
-        logger.debug("x movements %d", len(x))
+            # Plot the list of points
+            plot = ax.plot(x, y, linewidth=0.2, label=particle.id)
 
-        # Plot arrows for point to point
-        ax.quiver(x[:-1], y[:-1],
-                  np.subtract(x[1:], x[:-1]),
-                  np.subtract(y[1:], y[:-1]),
-                  scale_units='xy',
-                  angles='xy',
-                  scale=10,
-                  width=0.005,
-                  color=plot[0].get_color(),
-                  alpha=0.3)
+            logger.debug("x movements %d", len(x))
 
-    # ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
-    ax.legend(bbox_to_anchor=(1, 1), loc='upper left', markerscale=10)
+            # Plot arrows for point to point
+            ax.quiver(x[:-1], y[:-1],
+                      np.subtract(x[1:], x[:-1]),
+                      np.subtract(y[1:], y[:-1]),
+                      scale_units='xy',
+                      angles='xy',
+                      scale=10,
+                      width=0.005,
+                      color=plot[0].get_color(),
+                      alpha=0.3)
 
-    figManager = figure.canvas.manager.window.showMaximized()
-    # figManager.window.showMaximized()
+        ax.legend(bbox_to_anchor=(1, 1), loc='upper left', markerscale=10)
 
-    matplotlib.pyplot.show(block=True)
+        figManager = figure.canvas.manager.window.showMaximized()
+
+        matplotlib.pyplot.show(block=True)
 
     return best_individual
 
 
 if __name__ == "__main__":
-    main()
+    # Setup colored logs
+    coloredlogs.install(level='INFO', style='{', fmt='{name:15s} {levelname} {message}')
+
+    # Initialize the random seed
+    rand = Random()
+    # rand.seed(1)  # TODO: set to 1 for debug purposes, remove once ready to take off!
+
+    main(rand, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE)

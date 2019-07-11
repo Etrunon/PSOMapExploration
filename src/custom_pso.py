@@ -8,36 +8,12 @@ from inspyred.ec import Individual
 from inspyred.swarm import PSO
 
 from src.algorithms.algorithm import Algorithm
-from src.configuration import RESOURCE_RANGE, CITY_POSITION, TERMINATION_VARIANCE, MIN_GENERATION, MAX_GENERATION, \
+from src.configuration import TERMINATION_VARIANCE, MAX_GENERATION, \
     MAXIMUM_VELOCITY
-from src.data_structures import Map
+from src.data_structures.Map import world_map
 from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
-
-
-def custom_terminator(population: List[Individual], num_generations: int, num_evaluations: int,
-                      args: Dict) -> bool:
-    """
-
-    Returns:
-        bool: True if the variance of the fitnesses of all the particles is greater than 0 and below a given threshold
-        after a certain number of generations or once a certain number of generations is reached.
-    """
-    fitnesses = []
-
-    for index, p in enumerate(population):
-        fitnesses = np.insert(fitnesses, index, p.fitness)
-    variance = np.var(fitnesses)
-
-    if 0 < variance < TERMINATION_VARIANCE and num_generations > MIN_GENERATION:
-        logger.warning('>>>>>>>>> End for variance condition. Total Evaluation: ' + str(num_evaluations))
-        return True
-    elif num_generations > MAX_GENERATION:
-        logger.warning('>>>>>>>>> End for max generations reached. Total Evaluation: ' + str(num_evaluations))
-        return True
-    else:
-        return False
 
 
 def custom_observer(population, num_generations, num_evaluations, args) -> None:
@@ -45,7 +21,7 @@ def custom_observer(population, num_generations, num_evaluations, args) -> None:
     Log the best individual for each generation
     """
 
-    best = max(population)
+    best = min(population)
     logger.debug('Generations: %d  Evaluations: %d  Best: %s', num_generations, num_evaluations, best)
 
 
@@ -92,7 +68,7 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
 
         new_position = particle.current_position + new_velocity
 
-        if not algorithm.world_map.is_inside_map(new_position):
+        if not world_map.is_inside_map(new_position):
             # Ricalcola un nuovo vettore velocità a caso e riprova
             inside = False
             while not inside:
@@ -107,7 +83,7 @@ def custom_variator(random: Random, candidates: List[Particle], args: Dict) -> L
                 new_velocity[1] = tmp_velocity_y
 
                 new_position = particle.current_position + new_velocity
-                inside = algorithm.world_map.is_inside_map(new_position)
+                inside = world_map.is_inside_map(new_position)
 
         particle.move_to(new_position.astype(int))
         particle.set_velocity(new_velocity)
@@ -125,7 +101,7 @@ def evaluate_particle(candidates: List[Particle], args) -> List[float]:
     Returns: The list of fitness values, one for each particle
     """
     fitness: List[float] = []
-    world_map = args["_ec"].world_map
+
     for particle in candidates:
         score = args["_ec"].get_algorithm().evaluator(particle)
 
@@ -148,26 +124,40 @@ class CustomPSO(PSO):
     """
     Custom implementation of the PSO object, to allow for serialization and de-serialization for multiprocess support
     """
-
-    world_map: Map = None
     _algorithm: Algorithm = None
 
-    def set_world_map(self, world_map: Map):
-        self.world_map = world_map
-
-    def get_world_map(self):
-        assert self.world_map is not None
-        return self.world_map
-
-    def set_algorithm(self, algorithm: Algorithm):
-        self._algorithm = algorithm
 
     def get_algorithm(self):
         assert self._algorithm is not None
         return self._algorithm
 
-    def __init__(self, random):
+    def __init__(self, random, algorithm: Algorithm, min_generations: int):
         super().__init__(random)
+        self.min_generations = min_generations
+        self._algorithm = algorithm
+
+    def custom_terminator(self, population: List[Individual], num_generations: int, num_evaluations: int,
+                          args: Dict) -> bool:
+        """
+
+        Returns:
+            bool: True if the variance of the fitnesses of all the particles is greater than 0 and below a given threshold
+            after a certain number of generations or once a certain number of generations is reached.
+        """
+        fitnesses = []
+
+        for index, p in enumerate(population):
+            fitnesses = np.insert(fitnesses, index, p.fitness)
+        variance = np.var(fitnesses)
+
+        if 0 < variance < TERMINATION_VARIANCE and num_generations > self.min_generations:
+            logger.warning('>>>>>>>>> End for variance condition. Total Evaluation: ' + str(num_evaluations))
+            return True
+        elif num_generations > MAX_GENERATION:
+            logger.warning('>>>>>>>>> End for max generations reached. Total Evaluation: ' + str(num_evaluations))
+            return True
+        else:
+            return False
 
     def __getstate__(self):
         """ Invoked by Python to save the object for serialization

@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 id = -1
 
+
 class Algo1(Algorithm):
 
     def generate_particle(self, random: Random, args) -> Particle:

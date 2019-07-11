@@ -1,11 +1,11 @@
-import sys
+import os
 
 RESOURCE_RANGE = 100
 CITY_POSITION = (500, 600)
 TERMINATION_VARIANCE = 200  # TODO: find optimal value
-MIN_GENERATION = 200  # TODO: find optimal value
+MIN_GENERATIONS = 200  # TODO: find optimal value
 MAX_GENERATION = 4000  # TODO: find optimal value
-IMAGE_NAME = sys.argv[1]
+IMAGE_NAME = os.environ["IMAGE_NAME"]
 
 COGNITIVE_RATE = 0.50
 SOCIAL_RATE = 0.50
@@ -13,3 +13,5 @@ INERTIA_RATE = 800
 MAXIMUM_VELOCITY = 20
 
 POPULATION_SIZE = 5
+
+SHOW_GUI=os.environ.get("SHOW_GUI", True)

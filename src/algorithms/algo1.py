@@ -5,7 +5,7 @@ from _random import Random
 import numpy as np
 
 from src.algorithms.algorithm import Algorithm
-from src.configuration import RESOURCE_RANGE, MAXIMUM_VELOCITY, CITY_POSITION
+from src.configuration import RESOURCE_RANGE, CITY_POSITION
 from src.data_structures.Map import world_map as world_map
 from src.data_structures.Particle import Particle
 
@@ -35,7 +35,8 @@ class Algo1(Algorithm):
                 break
 
         # ToDo inizializzare bene il vettore, perchè fatto così arriva fino a ben oltre la MAXIMUM_VELOCITY
-        velocity = (random.randint(1, MAXIMUM_VELOCITY / 2), random.randint(1, MAXIMUM_VELOCITY / 2))
+        # // is integer division
+        velocity = (random.randint(1, self.maximum_velocity // 2), random.randint(1, self.maximum_velocity // 2))
 
         id += 1
 
@@ -69,8 +70,9 @@ class Algo1(Algorithm):
         # logging.debug("math.tan(normalization_factor): " + str(math.tan(normalization_factor)))
         return distance * math.tan(normalization_factor) - res_count
 
-    def __init__(self) -> None:
+    def __init__(self, maximum_velocity: int) -> None:
         super().__init__()
+        self.maximum_velocity = maximum_velocity
 
     def get_fitness_landscape(self) -> np.ndarray:
         """

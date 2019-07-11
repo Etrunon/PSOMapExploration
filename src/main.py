@@ -13,8 +13,8 @@ from matplotlib.patches import Circle
 
 from src.algorithms.algo1 import Algo1
 from src.configuration import RESOURCE_RANGE, CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
-    SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE
-from src.custom_pso import evaluate_particle, custom_variator, \
+    SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, MAX_GENERATIONS
+from src.custom_pso import evaluate_particle, \
     custom_observer, CustomPSO
 from src.data_structures.Map import world_map as world_map
 from src.data_structures.Particle import Particle
@@ -23,11 +23,9 @@ logger = logging.getLogger(__name__)
 
 # Set the theme used by matplotlib
 matplotlib.pyplot.style.use("seaborn-bright")
-# Set the backend used by matplotlib
-matplotlib.use("Qt5Agg")
 
 
-def main(rand: Random, min_generations, termination_variance, show_gui=True):
+def main(rand: Random, min_generations, max_generations, termination_variance, maximum_velocity, show_gui=True):
 
     # Observers (custom logger that are notified while the algorithm runs)
     observers = [custom_observer]
@@ -36,6 +34,9 @@ def main(rand: Random, min_generations, termination_variance, show_gui=True):
     # #  Plot part   #######################
     # ######################################
     if show_gui:
+        # Set the backend used by matplotlib
+        matplotlib.use("Qt5Agg")
+
         # Create a figure, because inspyred library already creates one
         figure: Figure = matplotlib.pyplot.figure(2)
 
@@ -67,16 +68,13 @@ def main(rand: Random, min_generations, termination_variance, show_gui=True):
     # #  Swarm part  #######################
     # ######################################
 
-    algorithm = Algo1()
+    algorithm = Algo1(maximum_velocity)
 
     # Instantiate the custom PSO instance with the specific algorithm
-    custom_pso = CustomPSO(rand, algorithm, min_generations)
+    custom_pso = CustomPSO(rand, algorithm, min_generations, max_generations, termination_variance, maximum_velocity)
 
     # Set custom properties for the PSO instance
     custom_pso.terminator = custom_pso.custom_terminator
-
-    # Set the custom variator to move each particle in the swarm
-    custom_pso.variator = custom_variator
 
     # Set the topology to specify how neighbours are found
     custom_pso.topology = inspyred.swarm.topologies.star_topology
@@ -156,4 +154,4 @@ if __name__ == "__main__":
     rand = Random()
     # rand.seed(1)  # TODO: set to 1 for debug purposes, remove once ready to take off!
 
-    main(rand, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE)
+    main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, SHOW_GUI)

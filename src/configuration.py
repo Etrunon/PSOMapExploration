@@ -4,7 +4,7 @@ RESOURCE_RANGE = 100
 CITY_POSITION = (500, 600)
 TERMINATION_VARIANCE = 200  # TODO: find optimal value
 MIN_GENERATIONS = 200  # TODO: find optimal value
-MAX_GENERATION = 4000  # TODO: find optimal value
+MAX_GENERATIONS = 4000  # TODO: find optimal value
 IMAGE_NAME = os.environ["IMAGE_NAME"]
 
 COGNITIVE_RATE = 0.50

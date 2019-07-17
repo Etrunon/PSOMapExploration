@@ -49,7 +49,7 @@ class Algo1(Algorithm):
                         id=id,
                         world_map=self.world_map)
 
-    def evaluator(self, particle: Particle) -> float:
+    def evaluate_particle(self, particle: Particle) -> float:
         """
         Compute the value of this particle in this location. The formula is: nearby resources - distance
         :return: the score of given particle 

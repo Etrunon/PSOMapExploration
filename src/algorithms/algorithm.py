@@ -21,7 +21,7 @@ class Algorithm:
         # self.resource_count_matrix = load_resource_count.load_resource_count(self.resource_count_path,
         #                                                                      calculate_resources)
 
-    def evaluator(self, particle: Particle) -> float:
+    def evaluate_particle(self, particle: Particle) -> float:
         raise Exception("Don't call the base method!")
 
     def compute_score(self, particle: Particle) -> float:

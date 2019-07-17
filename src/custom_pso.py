@@ -144,7 +144,7 @@ class CustomPSO(PSO):
         fitness: List[float] = []
 
         for particle in candidates:
-            score = args["_ec"].get_algorithm().evaluator(particle)
+            score = args["_ec"].get_algorithm().evaluate_particle(particle)
 
             # Update the particle best fitness, if current one is better
             if score < particle.best_fitness:
@@ -159,6 +159,7 @@ class CustomPSO(PSO):
             fitness.append(score)
 
         return fitness
+
     def __getstate__(self):
         """ Invoked by Python to save the object for serialization
         """

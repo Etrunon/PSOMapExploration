@@ -1,4 +1,5 @@
 import logging
+import os
 from random import Random
 
 import coloredlogs
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 # Set the theme used by matplotlib
 matplotlib.pyplot.style.use("seaborn-bright")
 
-PARALLELIZE = False
+PARALLELIZE = os.environ.get("PARALLELIZE", "false") == "true"
 
 
 def main(rand: Random, min_generations: int, max_generations: int, termination_variance: int, maximum_velocity: int,

@@ -27,7 +27,7 @@ class Particle:
     velocities: np.ndarray = np.zeros([0, 2])  #: Array containing all the velocities
 
     def __init__(self, starting_position: Tuple[int, int], velocity: np.ndarray, starting_base: Tuple[int, int],
-                 resource_range: int, world_map: Map, id: int):
+                 resource_range: int, world_map: Map, id: int, save_history: bool):
         self.world_map = world_map
         self.current_position = np.array([starting_position[0], starting_position[1]])
         self.velocity = velocity
@@ -37,6 +37,7 @@ class Particle:
         self.starting_base = np.array([starting_base[0], starting_base[1]])
         self.resource_range = resource_range
         self.id = id
+        self.save_history = save_history
 
     def count_resources(self):
         """
@@ -83,7 +84,8 @@ class Particle:
              new_position: Array with x and y coordinates
         """
 
-        self.movements = np.append(self.movements, [self.current_position], axis=0)
+        if self.save_history:
+            self.movements = np.append(self.movements, [self.current_position], axis=0)
         self.current_position = new_position
 
     def set_velocity(self, new_velocity: np.ndarray):  # TODO: needed?
@@ -93,7 +95,8 @@ class Particle:
         Args:
              new_velocity: Array with x and y velocity
         """
-        self.velocities = np.append(self.velocities, [self.velocity], axis=0)
+        if self.save_history:
+            self.velocities = np.append(self.velocities, [self.velocity], axis=0)
         self.velocity = new_velocity
 
     def __str__(self) -> str:

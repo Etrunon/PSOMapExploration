@@ -1,3 +1,4 @@
+import os
 import time
 from random import Random
 
@@ -23,6 +24,7 @@ space = [
 rand = Random()
 
 FILENAME = 'data/hyperparameters/result.skopt.gz'
+MINIMIZE_CALLS = int(os.environ.get("MINIMIZE_CALLS", 100))
 
 timing = []
 
@@ -49,7 +51,7 @@ if __name__ == '__main__':
         result = load(FILENAME)
 
     except IOError:
-        result = gp_minimize(objective, space, n_calls=100, n_points=10)
+        result = gp_minimize(objective, space, n_calls=MINIMIZE_CALLS, n_points=10)
 
         dump(result, filename=FILENAME)
 

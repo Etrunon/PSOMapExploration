@@ -12,11 +12,11 @@ from matplotlib.figure import Figure
 from matplotlib.patches import Circle
 
 from src.algorithms.algo1 import Algo1
-from src.configuration import RESOURCE_RANGE, CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
-    SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, MAX_GENERATIONS
-from src.custom_pso import evaluate_particle, \
-    custom_observer, CustomPSO
-from src.data_structures.Map import world_map as world_map
+from src.configuration import CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
+    SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, MAX_GENERATIONS, \
+    RESOURCE_RANGE
+from src.custom_pso import custom_observer, CustomPSO
+from src.data_structures.Map import Map
 from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
@@ -24,8 +24,11 @@ logger = logging.getLogger(__name__)
 # Set the theme used by matplotlib
 matplotlib.pyplot.style.use("seaborn-bright")
 
+PARALLELIZE = False
 
-def main(rand: Random, min_generations, max_generations, termination_variance, maximum_velocity, show_gui=True):
+
+def main(rand: Random, min_generations: int, max_generations: int, termination_variance: int, maximum_velocity: int,
+         resource_range: int, show_gui=True) -> Particle:
 
     # Observers (custom logger that are notified while the algorithm runs)
     observers = [custom_observer]
@@ -67,8 +70,9 @@ def main(rand: Random, min_generations, max_generations, termination_variance, m
     # ######################################
     # #  Swarm part  #######################
     # ######################################
+    world_map = Map(IMAGE_NAME)
 
-    algorithm = Algo1(maximum_velocity)
+    algorithm = Algo1(world_map, maximum_velocity, resource_range)
 
     # Instantiate the custom PSO instance with the specific algorithm
     custom_pso = CustomPSO(rand, algorithm, min_generations, max_generations, termination_variance, maximum_velocity)
@@ -82,38 +86,54 @@ def main(rand: Random, min_generations, max_generations, termination_variance, m
     # set the observers
     custom_pso.observer = observers
 
-    # Run the PSO algorithm
-    final_population = custom_pso.evolve(generator=algorithm.generate_particle,
-                                         # evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
-                                         evaluator=evaluate_particle,
-                                         # mp_evaluator=fitness_evaluator,
-                                         pop_size=POPULATION_SIZE,
-                                         maximize=False,
-                                         bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
-                                         # neighborhood_size=5,
-                                         max_evaluations=500,
-                                         # statistics_file=stat_file,
-                                         # individuals_file=ind_file)
-                                         inertia=INERTIA_RATE,
-                                         cognitive_rate=COGNITIVE_RATE,
-                                         social_rate=SOCIAL_RATE
-                                         )
+    if PARALLELIZE:
+        # Run the PSO algorithm
+        final_population = custom_pso.evolve(generator=algorithm.generate_particle,
+                                             evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
+                                             mp_evaluator=custom_pso.evaluate_particles,
+                                             pop_size=POPULATION_SIZE,
+                                             maximize=False,
+                                             bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
+                                             # neighborhood_size=5,
+                                             max_evaluations=500,
+                                             # statistics_file=stat_file,
+                                             # individuals_file=ind_file)
+                                             inertia=INERTIA_RATE,
+                                             cognitive_rate=COGNITIVE_RATE,
+                                             social_rate=SOCIAL_RATE
+                                             )
+    else:
+        # Run the PSO algorithm
+        final_population = custom_pso.evolve(generator=algorithm.generate_particle,
+                                             # evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
+                                             evaluator=custom_pso.evaluate_particles,
+                                             # mp_evaluator=fitness_evaluator,
+                                             pop_size=POPULATION_SIZE,
+                                             maximize=False,
+                                             bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
+                                             # neighborhood_size=5,
+                                             max_evaluations=500,
+                                             # statistics_file=stat_file,
+                                             # individuals_file=ind_file)
+                                             inertia=INERTIA_RATE,
+                                             cognitive_rate=COGNITIVE_RATE,
+                                             social_rate=SOCIAL_RATE
+                                             )
 
-    best_individual: Particle = None
-    for ind in final_population:
-        if world_map.best_fitness >= ind.candidate.best_fitness:
-            best_individual = ind.candidate
+    for individual in final_population:
+        if world_map.best_fitness >= individual.candidate.best_fitness:
+            best_particle = individual.candidate
 
-    logger.info('Fittest individual: \n%s', best_individual)
+    logger.info('Fittest individual: \n%s', best_particle)
 
     if show_gui:
         # Plot the best location found
-        best_position = (best_individual.best_position[0], best_individual.best_position[1])
+        best_position = (best_particle.best_position[0], best_particle.best_position[1])
 
-        end = Circle(best_position, RESOURCE_RANGE, facecolor="purple", alpha=0.5)
+        end = Circle(best_position, resource_range, facecolor="purple", alpha=0.5)
         ax.add_patch(end)
         # Show the best fitness value
-        ax.annotate("{:.0f}".format(best_individual.best_fitness), best_position, color='white',
+        ax.annotate("{:.0f}".format(best_particle.best_fitness), best_position, color='white',
                     fontsize='x-large', fontweight='bold')
 
         for individual in final_population:
@@ -143,7 +163,7 @@ def main(rand: Random, min_generations, max_generations, termination_variance, m
 
         matplotlib.pyplot.show(block=True)
 
-    return best_individual
+    return best_particle
 
 
 if __name__ == "__main__":
@@ -154,4 +174,4 @@ if __name__ == "__main__":
     rand = Random()
     # rand.seed(1)  # TODO: set to 1 for debug purposes, remove once ready to take off!
 
-    main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, SHOW_GUI)
+    main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, SHOW_GUI)

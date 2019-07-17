@@ -8,14 +8,14 @@ from skopt.plots import plot_evaluations, plot_objective
 from skopt.space import Integer
 from skopt.utils import use_named_args, dump, load
 
-from src.data_structures.Map import world_map
 from src.main import main
 
 space = [
     # Integer(1, 200, name='min_generations'),
     Integer(1, 200, name='termination_variance'),
     Integer(2, 200, name='maximum_velocity'),
-    Integer(1, 1000, name='max_generations')
+    Integer(1, 1000, name='max_generations'),
+    Integer(10, 100, name='resource_range')
 ]
 
 rand = Random()
@@ -25,7 +25,6 @@ FILENAME = 'result.skopt.gz'
 
 @use_named_args(space)
 def objective(**kwargs):
-    world_map.best_fitness = 10000
 
     best_particle = main(rand, **kwargs, min_generations=200, show_gui=False)
 

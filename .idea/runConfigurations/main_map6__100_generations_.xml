@@ -1,20 +1,21 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="sko" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="main map6 (100 generations)" type="PythonConfigurationType" factoryName="Python">
     <module name="Bio-Inspired" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
       <env name="IMAGE_NAME" value="map6.png" />
+      <env name="MAX_GENERATIONS" value="100" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="IS_MODULE_SDK" value="true" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/sko.py" />
-    <option name="PARAMETERS" value="" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
+    <option name="PARAMETERS" value="map6.png" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="true" />
     <option name="MODULE_MODE" value="false" />

@@ -12,13 +12,15 @@ logger = logging.getLogger(__name__)
 result = None
 
 
+# N.B.: This file is not currently used
+
 def count_resources(x: int, y: int) -> Tuple[int, int, int]:
     # Print a log every x and y cycles
     if x % 100 == 0 and y % 600 == 0:
         logger.info("Calculating on coordinates x = %d, y = %d...", x, y)
     # Perform the computation
-    particle = Particle((x, y), 0, (0, 0), resource_range=RESOURCE_RANGE, id=1)
-    return particle.count_resources(world_map), x, y
+    particle = Particle((x, y), 0, (0, 0), resource_range=RESOURCE_RANGE, id=1, world_map=world_map)
+    return particle.count_resources(), x, y
 
 
 def result_callback(args):

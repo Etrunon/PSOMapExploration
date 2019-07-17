@@ -1,8 +1,8 @@
 import string
+import sys
 
 import numpy as np
 
-from src.configuration import IMAGE_NAME, RESOURCE_RANGE
 from src.preprocess_utilities.detect_resources import detect_resources
 
 
@@ -17,14 +17,15 @@ class Map:
     map_dim = None
 
     best_position: np.ndarray = None  #: Array containing the x,y coordinates of the global best
-    best_fitness: float = 0  #: Value of the fitness in the best position
+    # Initialize best fitness to an absurd high value
+    best_fitness: float = sys.maxsize  #: Value of the fitness in the best position
 
     def __init__(self, image_name: string):
         self.resource_map = detect_resources(image_name)
         self.water_map = detect_resources(image_name, water=True)
         self.map_dim = self.resource_map.shape
 
-    def is_inside_map(self, position: np.ndarray) -> bool:
+    def is_inside_map(self, position: np.ndarray, resource_range: int) -> bool:
         """
         Subtract the resource range, so that each point having true as output, has a relevant square around it.
         If it did not subtract the range from the then it would be possible to compute the value for point 1,1 even
@@ -36,11 +37,9 @@ class Map:
         x = position[0]
         y = position[1]
 
-        if RESOURCE_RANGE < x < self.map_dim[0] - RESOURCE_RANGE:
-            if RESOURCE_RANGE < y < self.map_dim[1] - RESOURCE_RANGE:
+        if resource_range < x < self.map_dim[0] - resource_range:
+            if resource_range < y < self.map_dim[1] - resource_range:
                 return True
 
         return False
 
-
-world_map: Map = Map(image_name=IMAGE_NAME)

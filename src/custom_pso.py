@@ -8,7 +8,6 @@ from inspyred.ec import Individual
 from inspyred.swarm import PSO
 
 from src.algorithms.algorithm import Algorithm
-from src.data_structures.Map import world_map
 from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
@@ -21,34 +20,6 @@ def custom_observer(population, num_generations, num_evaluations, args) -> None:
 
     best = min(population)
     logger.debug('Generations: %d  Evaluations: %d  Best: %s', num_generations, num_evaluations, best)
-
-
-def evaluate_particle(candidates: List[Particle], args) -> List[float]:
-    """
-    Evaluate the particle considering the fitness of all the swarm particles.
-    - update the best position for each particle,  if applicable
-    - update the global best position, if applicable
-
-    Returns: The list of fitness values, one for each particle
-    """
-    fitness: List[float] = []
-
-    for particle in candidates:
-        score = args["_ec"].get_algorithm().evaluator(particle)
-
-        # Update the particle best fitness, if current one is better
-        if score < particle.best_fitness:
-            particle.best_fitness = score
-            particle.best_position = particle.current_position
-
-        # Update the global position, if the current one is better
-        if score < world_map.best_fitness:
-            world_map.best_fitness = score
-            world_map.best_position = particle.current_position
-
-        fitness.append(score)
-
-    return fitness
 
 
 class CustomPSO(PSO):
@@ -139,7 +110,7 @@ class CustomPSO(PSO):
 
             new_position = particle.current_position + new_velocity
 
-            if not world_map.is_inside_map(new_position):
+            if not self._algorithm.world_map.is_inside_map(new_position, self._algorithm.resource_range):
                 # Ricalcola un nuovo vettore velocità a caso e riprova
                 inside = False
                 while not inside:
@@ -154,7 +125,7 @@ class CustomPSO(PSO):
                     new_velocity[1] = tmp_velocity_y
 
                     new_position = particle.current_position + new_velocity
-                    inside = world_map.is_inside_map(new_position)
+                    inside = self._algorithm.world_map.is_inside_map(new_position, self._algorithm.resource_range)
 
             particle.move_to(new_position.astype(int))
             particle.set_velocity(new_velocity)
@@ -162,6 +133,32 @@ class CustomPSO(PSO):
 
         return offspring
 
+    def evaluate_particles(self, candidates: List[Particle], args) -> List[float]:
+        """
+        Evaluate the particle considering the fitness of all the swarm particles.
+        - update the best position for each particle,  if applicable
+        - update the global best position, if applicable
+
+        Returns: The list of fitness values, one for each particle
+        """
+        fitness: List[float] = []
+
+        for particle in candidates:
+            score = args["_ec"].get_algorithm().evaluator(particle)
+
+            # Update the particle best fitness, if current one is better
+            if score < particle.best_fitness:
+                particle.best_fitness = score
+                particle.best_position = particle.current_position
+
+            # Update the global position, if the current one is better
+            if score < self._algorithm.world_map.best_fitness:
+                self._algorithm.world_map.best_fitness = score
+                self._algorithm.world_map.best_position = particle.current_position
+
+            fitness.append(score)
+
+        return fitness
     def __getstate__(self):
         """ Invoked by Python to save the object for serialization
         """

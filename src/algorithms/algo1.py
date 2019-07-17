@@ -40,11 +40,9 @@ class Algo1(Algorithm):
 
         id += 1
 
-        return Particle(starting_position=random_point,
-                        velocity=np.array(velocity, np.uintc),
-                        resource_range=RESOURCE_RANGE,
-                        starting_base=CITY_POSITION,
-                        id=id)
+        return Particle(starting_position=random_point, velocity=np.array(velocity, np.uintc),
+                        starting_base=CITY_POSITION, resource_range=RESOURCE_RANGE, id=id,
+                        save_history=self.save_history)
 
     def evaluator(self, particle: Particle) -> float:
         """
@@ -70,9 +68,10 @@ class Algo1(Algorithm):
         # logging.debug("math.tan(normalization_factor): " + str(math.tan(normalization_factor)))
         return distance * math.tan(normalization_factor) - res_count
 
-    def __init__(self, maximum_velocity: int) -> None:
+    def __init__(self, maximum_velocity: int, save_history: bool) -> None:
         super().__init__()
         self.maximum_velocity = maximum_velocity
+        self.save_history = save_history
 
     def get_fitness_landscape(self) -> np.ndarray:
         """

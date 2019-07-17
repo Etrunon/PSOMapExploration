@@ -1,8 +1,10 @@
+import time
 from random import Random
 
 import coloredlogs
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 from skopt import gp_minimize
 from skopt.plots import plot_evaluations, plot_objective
 from skopt.space import Integer
@@ -20,14 +22,23 @@ space = [
 
 rand = Random()
 
-FILENAME = 'result.skopt.gz'
+FILENAME = 'data/hyperparameters/result.skopt.gz'
+
+timing = []
 
 
 @use_named_args(space)
 def objective(**kwargs):
+    start = time.time()
+
     world_map.best_fitness = 10000
 
     best_particle = main(rand, **kwargs, min_generations=200, show_gui=False)
+
+    end = time.time()
+    objective_duration = end - start
+    timing.append(objective_duration)
+    # print("skopt took %.4f seconds to execute objective" % objective_duration)
 
     return best_particle.best_fitness
 
@@ -54,4 +65,8 @@ if __name__ == '__main__':
     matplotlib.use("Qt5Agg")
     plot_evaluations(result, bins=10)
     plot_objective(result)
+
+    fig, ax_lst = plt.subplots(1, 1)
+    plt.plot(timing)
+    plt.xlabel('average timing %.4f seconds' % np.mean(timing))
     plt.show(block=True)

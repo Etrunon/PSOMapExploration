@@ -28,7 +28,7 @@ class Particle:
     movements: np.ndarray = np.zeros([0, 2])  #: Array containing all the positions
     velocities: np.ndarray = np.zeros([0, 2])  #: Array containing all the velocities
 
-    def __init__(self, starting_position, velocity: np.ndarray, starting_base, resource_range, id):
+    def __init__(self, starting_position, velocity: np.ndarray, starting_base, resource_range, id, save_history):
         self.current_position = np.array([starting_position[0], starting_position[1]])
         self.velocity = velocity
         self.best_position = self.current_position
@@ -38,6 +38,7 @@ class Particle:
         self.resource_half_square = resource_range
         self.resource_radius = resource_range
         self.id = id
+        self.save_history = save_history
 
     def count_resources(self, map: Map):
         """
@@ -76,8 +77,6 @@ class Particle:
 
         return np.sum(sub_matrix)
 
-
-
     def move_to(self, new_position: np.ndarray):
         """
         Set the particle to the given position, saving its old one inside the movements array
@@ -86,7 +85,8 @@ class Particle:
              new_position: Array with x and y coordinates
         """
 
-        self.movements = np.append(self.movements, [self.current_position], axis=0)
+        if self.save_history:
+            self.movements = np.append(self.movements, [self.current_position], axis=0)
         self.current_position = new_position
 
     def set_velocity(self, new_velocity: np.ndarray):  # TODO: needed?
@@ -96,7 +96,9 @@ class Particle:
         Args:
              new_velocity: Array with x and y velocity
         """
-        self.velocities = np.append(self.velocities, [self.velocity], axis=0)
+
+        if self.save_history:
+            self.velocities = np.append(self.velocities, [self.velocity], axis=0)
         self.velocity = new_velocity
 
     def __str__(self) -> str:

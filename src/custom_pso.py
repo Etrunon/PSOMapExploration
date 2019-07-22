@@ -59,10 +59,10 @@ class CustomPSO(PSO):
         variance = np.var(fitnesses)
 
         if 0 < variance < self.termination_variance and num_generations > self.min_generations:
-            logger.warning('>>>>>>>>> End for variance condition. Total Evaluation: ' + str(num_evaluations))
+            logger.warning('End for variance condition. Total Evaluation: ' + str(num_evaluations))
             return True
         elif num_generations > self.maximum_generations:
-            logger.warning('>>>>>>>>> End for max generations reached. Total Evaluation: ' + str(num_evaluations))
+            logger.warning('End for max generations reached. Total Evaluation: ' + str(num_evaluations))
             return True
         else:
             return False

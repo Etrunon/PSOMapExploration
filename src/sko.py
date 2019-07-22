@@ -1,6 +1,8 @@
+import logging
 import os
 import time
 from random import Random
+from typing import List
 
 import coloredlogs
 import matplotlib
@@ -24,23 +26,31 @@ space = [
 rand = Random()
 
 FILENAME = 'data/hyperparameters/result.skopt.gz'
-MINIMIZE_CALLS = int(os.environ.get("MINIMIZE_CALLS", 100))
+MINIMIZE_CALLS = int(os.environ.get("MINIMIZE_CALLS", 10))
+AGGREGATED_PARTICLES = int(os.environ.get("AGGREGATED_PARTICLES", 10))
 
-timing = []
+timing: List[float] = []
+aggregated_best_individuals: List[float] = []
+
+logger = logging.getLogger(__name__)
 
 
 @use_named_args(space)
 def objective(**kwargs):
     start = time.time()
 
-    best_particle = main(rand, **kwargs, min_generations=200, show_gui=False)
+    for i in range(0, AGGREGATED_PARTICLES):
+        best_particle = main(rand, **kwargs, min_generations=200, show_gui=False)
+        aggregated_best_individuals.insert(i, best_particle.best_fitness)
 
     end = time.time()
     objective_duration = end - start
     timing.append(objective_duration)
     # print("skopt took %.4f seconds to execute objective" % objective_duration)
+    logger.info('Objective aggregated %d particles and returns the mean %d', AGGREGATED_PARTICLES,
+                np.mean(best_particle.best_fitness))
 
-    return best_particle.best_fitness
+    return np.mean(best_particle.best_fitness)
 
 
 if __name__ == '__main__':

@@ -12,6 +12,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.patches import Circle
 
+import src.data_structures.Map as world_map
 from src.algorithms.algo1 import Algo1
 from src.configuration import CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
     SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, MAX_GENERATIONS, \
@@ -70,9 +71,9 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
     # ######################################
     # #  Swarm part  #######################
     # ######################################
-    world_map = Map(IMAGE_NAME)
+    world_map.world_map = Map(IMAGE_NAME)
 
-    algorithm = Algo1(world_map, maximum_velocity, resource_range, save_history=show_gui)
+    algorithm = Algo1(maximum_velocity, resource_range, save_history=show_gui)
 
     # Instantiate the custom PSO instance with the specific algorithm
     custom_pso = CustomPSO(rand, algorithm, min_generations, max_generations, termination_variance, maximum_velocity)
@@ -87,7 +88,7 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
                                              mp_evaluator=custom_pso.evaluate_particles,
                                              pop_size=POPULATION_SIZE,
                                              maximize=False,
-                                             bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
+                                             bounder=inspyred.ec.Bounder(0, max(world_map.world_map.map_dim)),
                                              # neighborhood_size=5,
                                              max_evaluations=500,
                                              # statistics_file=stat_file,
@@ -104,7 +105,7 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
                                              # mp_evaluator=fitness_evaluator,
                                              pop_size=POPULATION_SIZE,
                                              maximize=False,
-                                             bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
+                                             bounder=inspyred.ec.Bounder(0, max(world_map.world_map.map_dim)),
                                              # neighborhood_size=5,
                                              max_evaluations=500,
                                              # statistics_file=stat_file,
@@ -115,7 +116,7 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
                                              )
 
     for individual in final_population:
-        if world_map.best_fitness >= individual.candidate.best_fitness:
+        if world_map.world_map.best_fitness >= individual.candidate.best_fitness:
             best_particle = individual.candidate
 
     logger.info('Fittest individual: \n%s', best_particle)
@@ -167,4 +168,7 @@ if __name__ == "__main__":
     # Initialize the random seed
     rand = Random()
 
-    main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, SHOW_GUI)
+    particle = main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE,
+                    SHOW_GUI)
+
+    logger.info(particle)

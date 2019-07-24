@@ -61,7 +61,7 @@ if __name__ == '__main__':
         result = load(FILENAME)
 
     except IOError:
-        result = gp_minimize(objective, space, n_calls=MINIMIZE_CALLS, n_points=10)
+        result = gp_minimize(objective, space, n_calls=MINIMIZE_CALLS, verbose=True)
 
         dump(result, filename=FILENAME)
 

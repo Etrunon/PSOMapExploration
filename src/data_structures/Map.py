@@ -42,3 +42,6 @@ class Map:
                 return True
 
         return False
+
+
+world_map = None

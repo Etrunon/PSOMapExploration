@@ -8,6 +8,7 @@ import numpy as np
 from inspyred.ec import Individual
 from inspyred.swarm import PSO
 
+import src.data_structures.Map as world_map
 from src.algorithms.algorithm import Algorithm
 from src.data_structures.Particle import Particle
 
@@ -119,7 +120,7 @@ class CustomPSO(PSO):
 
             new_position = particle.current_position + new_velocity
 
-            if not self._algorithm.world_map.is_inside_map(new_position, self._algorithm.resource_range):
+            if not world_map.world_map.is_inside_map(new_position, self._algorithm.resource_range):
                 # Calculate a new velocity vector and try again
                 inside = False
                 while not inside:
@@ -134,7 +135,7 @@ class CustomPSO(PSO):
                     new_velocity[1] = tmp_velocity_y
 
                     new_position = particle.current_position + new_velocity
-                    inside = self._algorithm.world_map.is_inside_map(new_position, self._algorithm.resource_range)
+                    inside = world_map.world_map.is_inside_map(new_position, self._algorithm.resource_range)
 
             particle.move_to(new_position.astype(int))
             particle.set_velocity(new_velocity)
@@ -142,7 +143,8 @@ class CustomPSO(PSO):
 
         return offspring
 
-    def evaluate_particles(self, candidates: List[Particle], args) -> List[float]:
+    @staticmethod
+    def evaluate_particles(candidates: List[Particle], args) -> List[float]:
         """
 
         Evaluate the particle considering the fitness of all the swarm particles. If applicable, update the best position for each particle and the global best position
@@ -151,9 +153,10 @@ class CustomPSO(PSO):
             List[float]:The list of fitness values, one for each particle
         """
         fitness: List[float] = []
+        pso: CustomPSO = args["_ec"]
 
         for particle in candidates:
-            score = args["_ec"].get_algorithm().evaluate_particle(particle)
+            score = pso.get_algorithm().evaluate_particle(particle)
 
             # Update the particle best fitness, if current one is better
             if score < particle.best_fitness:
@@ -161,9 +164,9 @@ class CustomPSO(PSO):
                 particle.best_position = particle.current_position
 
             # Update the global position, if the current one is better
-            if score < self._algorithm.world_map.best_fitness:
-                self._algorithm.world_map.best_fitness = score
-                self._algorithm.world_map.best_position = particle.current_position
+            if score < world_map.world_map.best_fitness:
+                world_map.best_fitness = score
+                world_map.best_position = particle.current_position
 
             fitness.append(score)
 

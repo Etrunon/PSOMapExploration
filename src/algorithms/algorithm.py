@@ -1,7 +1,6 @@
 import logging
 from _random import Random
 
-from src.data_structures import Map
 from src.data_structures.Particle import Particle
 
 logger = logging.getLogger(__name__)
@@ -12,8 +11,7 @@ class Algorithm:
 
     # resource_count_path = ''
 
-    def __init__(self, world_map: Map, resource_range: int) -> None:
-        self.world_map = world_map
+    def __init__(self, resource_range: int) -> None:
         self.resource_range = resource_range
 
         # self.resource_count_path = 'data/cached_matrices/{}_resource_count_{}_{}x{}.npy'. \

@@ -30,27 +30,27 @@ MINIMIZE_CALLS = int(os.environ.get("MINIMIZE_CALLS", 10))
 AGGREGATED_PARTICLES = int(os.environ.get("AGGREGATED_PARTICLES", 10))
 
 timing: List[float] = []
-aggregated_best_individuals: List[float] = []
 
 logger = logging.getLogger(__name__)
 
 
 @use_named_args(space)
 def objective(**kwargs):
+    aggregated_best_individuals: List[float] = []
     start = time.time()
 
     for i in range(0, AGGREGATED_PARTICLES):
         best_particle = main(rand, **kwargs, min_generations=200, show_gui=False)
-        aggregated_best_individuals.insert(i, best_particle.best_fitness)
+        aggregated_best_individuals.append(best_particle.best_fitness)
 
     end = time.time()
     objective_duration = end - start
     timing.append(objective_duration)
     # print("skopt took %.4f seconds to execute objective" % objective_duration)
     logger.info('Objective aggregated %d particles and returns the mean %d', AGGREGATED_PARTICLES,
-                np.mean(best_particle.best_fitness))
+                np.mean(aggregated_best_individuals))
 
-    return np.mean(best_particle.best_fitness)
+    return np.mean(aggregated_best_individuals)
 
 
 if __name__ == '__main__':

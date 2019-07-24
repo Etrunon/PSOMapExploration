@@ -104,6 +104,7 @@ class Particle:
     def __str__(self) -> str:
         return "\t\t\tcurrent_position: " + str(self.current_position) + " \n" + \
                "\t\t\tvelocity: " + str(self.velocity) + " \n" + \
-               "\t\t\tlocal_best: " + str(self.best_position) + " \n" + \
+               "\t\t\tlocal_best_position: " + str(self.best_position) + " \n" + \
                "\t\t\tstarting_base: " + str(self.starting_base) + " \n" + \
-               "\t\t\tresource_range: " + str(self.resource_range) + " \n"
+               "\t\t\tresource_range: " + str(self.resource_range) + " \n" + \
+               "\t\t\tfitness: " + str(self.best_fitness) + " \n"

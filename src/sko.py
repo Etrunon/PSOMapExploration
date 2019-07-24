@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from skopt import gp_minimize
 from skopt.plots import plot_evaluations, plot_objective
-from skopt.space import Integer
+from skopt.space import Integer, Real
 from skopt.utils import use_named_args, dump, load
 
 from src.main import main
@@ -21,9 +21,9 @@ space = [
     Integer(2, 200, name='maximum_velocity'),
     Integer(1, 1000, name='max_generations'),
     Integer(10, 100, name='resource_range'),
-    Integer(0, 1, name='cognitive_rate'),
-    Integer(0, 1, name='inertia_rate'),
-    Integer(0, 1, name='social_rate'),
+    Real(0, 1, name='cognitive_rate'),
+    Real(0, 1, name='inertia_rate'),
+    Real(0, 1, name='social_rate'),
     Integer(1, 10, name='population_size')
 ]
 
@@ -40,6 +40,8 @@ logger = logging.getLogger(__name__)
 
 @use_named_args(space)
 def objective(**kwargs):
+    logger.info(kwargs)
+
     aggregated_best_individuals: List[float] = []
     start = time.time()
 
@@ -50,7 +52,6 @@ def objective(**kwargs):
     end = time.time()
     objective_duration = end - start
     timing.append(objective_duration)
-    # print("skopt took %.4f seconds to execute objective" % objective_duration)
     logger.info('Objective aggregated %d particles and returns the mean %d', AGGREGATED_PARTICLES,
                 np.mean(aggregated_best_individuals))
 
@@ -65,7 +66,7 @@ if __name__ == '__main__':
         result = load(FILENAME)
 
     except IOError:
-        result = gp_minimize(objective, space, n_calls=MINIMIZE_CALLS, n_points=10)
+        result = gp_minimize(objective, space, n_calls=MINIMIZE_CALLS, n_points=10, verbose=True)
 
         dump(result, filename=FILENAME)
 

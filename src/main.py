@@ -29,7 +29,8 @@ PARALLELIZE = os.environ.get("PARALLELIZE", "false") == "true"
 
 
 def main(rand: Random, min_generations: int, max_generations: int, termination_variance: int, maximum_velocity: int,
-         resource_range: int, show_gui=True) -> Particle:
+         resource_range: int, inertia_rate: float, social_rate: float, cognitive_rate: float, population_size: int,
+         show_gui=True) -> Particle:
     # Observers (custom logger that are notified while the algorithm runs)
     observers = [custom_observer]
 
@@ -85,16 +86,16 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
         final_population = custom_pso.evolve(generator=algorithm.generate_particle,
                                              evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
                                              mp_evaluator=custom_pso.evaluate_particles,
-                                             pop_size=POPULATION_SIZE,
+                                             pop_size=population_size,
                                              maximize=False,
                                              bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
                                              # neighborhood_size=5,
                                              max_evaluations=500,
                                              # statistics_file=stat_file,
                                              # individuals_file=ind_file)
-                                             inertia=INERTIA_RATE,
-                                             cognitive_rate=COGNITIVE_RATE,
-                                             social_rate=SOCIAL_RATE
+                                             inertia=inertia_rate,
+                                             cognitive_rate=cognitive_rate,
+                                             social_rate=social_rate
                                              )
     else:
         # Run the PSO algorithm
@@ -102,16 +103,16 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
                                              # evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
                                              evaluator=custom_pso.evaluate_particles,
                                              # mp_evaluator=fitness_evaluator,
-                                             pop_size=POPULATION_SIZE,
+                                             pop_size=population_size,
                                              maximize=False,
                                              bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
                                              # neighborhood_size=5,
                                              max_evaluations=500,
                                              # statistics_file=stat_file,
                                              # individuals_file=ind_file)
-                                             inertia=INERTIA_RATE,
-                                             cognitive_rate=COGNITIVE_RATE,
-                                             social_rate=SOCIAL_RATE
+                                             inertia=inertia_rate,
+                                             cognitive_rate=cognitive_rate,
+                                             social_rate=social_rate
                                              )
 
     for individual in final_population:
@@ -167,4 +168,5 @@ if __name__ == "__main__":
     # Initialize the random seed
     rand = Random()
 
-    main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, SHOW_GUI)
+    main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, INERTIA_RATE,
+         COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE, SHOW_GUI)

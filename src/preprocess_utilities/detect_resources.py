@@ -64,7 +64,7 @@ def detect_resources(image_name, water=False) -> np.ndarray:
 
     try:
         resources_matrix = np.load(cached_matrix_path)
-        logger.info('Loaded matrix from cached file')
+        logger.debug('Loaded matrix from cached file')
     except IOError:
 
         logger.info('Resource matrix file does not exist or cannot be read.')

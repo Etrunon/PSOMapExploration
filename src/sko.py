@@ -20,7 +20,11 @@ space = [
     Integer(1, 200, name='termination_variance'),
     Integer(2, 200, name='maximum_velocity'),
     Integer(1, 1000, name='max_generations'),
-    Integer(10, 100, name='resource_range')
+    Integer(10, 100, name='resource_range'),
+    Integer(0, 1, name='cognitive_rate'),
+    Integer(0, 1, name='inertia_rate'),
+    Integer(0, 1, name='social_rate'),
+    Integer(1, 10, name='population_size')
 ]
 
 rand = Random()

@@ -3,6 +3,7 @@ import math
 from random import Random
 from typing import List, Dict
 
+import inspyred
 import numpy as np
 from inspyred.ec import Individual
 from inspyred.swarm import PSO
@@ -44,9 +45,17 @@ class CustomPSO(PSO):
         # Set the custom variator to move each particle in the swarm
         self.variator = self.custom_variator
 
+        # Set custom properties for the PSO instance
+        self.terminator = self.custom_terminator
+
+        # Set the topology to specify how neighbours are found
+        self.topology = inspyred.swarm.topologies.star_topology
+
     def custom_terminator(self, population: List[Individual], num_generations: int, num_evaluations: int,
                           args: Dict) -> bool:
         """
+
+        Determine when the evolutionary process should end.
 
         Returns:
             bool: True if the variance of the fitnesses of all the particles is greater than 0 and below a given threshold
@@ -69,11 +78,11 @@ class CustomPSO(PSO):
 
     def custom_variator(self, random: Random, candidates: List[Particle], args: Dict) -> List[Particle]:
         """
+
         Update the position of each particle in the swarm.
-        This function is called by inspyred once for each generation
 
-        Returns: A list of particle, with their positions modified
-
+        Returns:
+            List[Particle]: a list of particles, with their positions modified.
         """
 
         algorithm: CustomPSO = args["_ec"]
@@ -111,7 +120,7 @@ class CustomPSO(PSO):
             new_position = particle.current_position + new_velocity
 
             if not self._algorithm.world_map.is_inside_map(new_position, self._algorithm.resource_range):
-                # Ricalcola un nuovo vettore velocità a caso e riprova
+                # Calculate a new velocity vector and try again
                 inside = False
                 while not inside:
                     angle = random.randint(0, 360)
@@ -135,11 +144,11 @@ class CustomPSO(PSO):
 
     def evaluate_particles(self, candidates: List[Particle], args) -> List[float]:
         """
-        Evaluate the particle considering the fitness of all the swarm particles.
-        - update the best position for each particle,  if applicable
-        - update the global best position, if applicable
 
-        Returns: The list of fitness values, one for each particle
+        Evaluate the particle considering the fitness of all the swarm particles. If applicable, update the best position for each particle and the global best position
+
+        Returns:
+            List[float]:The list of fitness values, one for each particle
         """
         fitness: List[float] = []
 

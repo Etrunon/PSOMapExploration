@@ -46,9 +46,8 @@ def objective(**kwargs):
     end = time.time()
     objective_duration = end - start
     timing.append(objective_duration)
-    # print("skopt took %.4f seconds to execute objective" % objective_duration)
-    logger.info('Objective aggregated %d particles and returns the mean %d', AGGREGATED_PARTICLES,
-                np.mean(best_particle.best_fitness))
+    logger.info('Objective aggregated %d particles in %.4f seconds and returns the mean %d', AGGREGATED_PARTICLES,
+                objective_duration, np.mean(best_particle.best_fitness))
 
     return np.mean(best_particle.best_fitness)
 

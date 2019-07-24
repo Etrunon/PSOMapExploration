@@ -19,8 +19,8 @@ class Particle:
     # Location of the "city" which we're trying to optimize
     starting_base = (None, None)
 
-    """Radius in which this particle will look for resource. It is a square (not a circle) and this number represents
-    half side (i.e. if this number is 10 the square has side 20 and area 400)"""
+    # Radius in which this particle will look for resource. It is a square (not a circle) and this number represents
+    # half side (i.e. if this number is 10 the square has side 20 and area 400)
     resource_range = None
 
     movements: np.ndarray = np.zeros([0, 2])  #: Array containing all the positions
@@ -50,6 +50,7 @@ class Particle:
         Returns:
             The number of resources
         """
+
         # v1                   v2
         #      true_v1------true_v2--------
         #      |
@@ -88,13 +89,14 @@ class Particle:
             self.movements = np.append(self.movements, [self.current_position], axis=0)
         self.current_position = new_position
 
-    def set_velocity(self, new_velocity: np.ndarray):  # TODO: needed?
+    def set_velocity(self, new_velocity: np.ndarray):
         """
         Set the particle's velocity, saving its old one inside the velocities array
 
         Args:
              new_velocity: Array with x and y velocity
         """
+
         if self.save_history:
             self.velocities = np.append(self.velocities, [self.velocity], axis=0)
         self.velocity = new_velocity

@@ -24,7 +24,7 @@ class Algo1(Algorithm):
         Parameters:
             random: random generator
         Returns:
-            The newly created particle
+            Particle: the newly created particle
         """
         global id
 
@@ -36,7 +36,6 @@ class Algo1(Algorithm):
             if self.world_map.water_map[random_point[0]][random_point[1]] == 0:  # 0 means earth in the matrix
                 break
 
-        # ToDo inizializzare bene il vettore, perchè fatto così arriva fino a ben oltre la MAXIMUM_VELOCITY
         # // is integer division
         velocity = (random.randint(1, self.maximum_velocity // 2), random.randint(1, self.maximum_velocity // 2))
 
@@ -52,14 +51,13 @@ class Algo1(Algorithm):
 
     def evaluate_particle(self, particle: Particle) -> float:
         """
+
         Compute the value of this particle in this location. The formula is: nearby resources - distance
-        :return: the score of given particle 
-        """""
-        # if self.memo is None:
-        #     logger.debug("The memoization should have been computed")
-        # else:
-        #     return self.memo[particle.current_position]
-        # TODO: enable memoization once works
+
+        Returns:
+            float: the score of given particle
+        """
+
         return self.compute_score(particle)
 
     def compute_score(self, particle: Particle) -> float:

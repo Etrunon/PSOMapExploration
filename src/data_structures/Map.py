@@ -42,4 +42,3 @@ class Map:
                 return True
 
         return False
-

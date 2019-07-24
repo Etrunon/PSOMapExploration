@@ -9,6 +9,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from skopt import gp_minimize
+from skopt.callbacks import CheckpointSaver
 from skopt.plots import plot_evaluations, plot_objective
 from skopt.space import Integer, Real
 from skopt.utils import use_named_args, dump, load
@@ -29,7 +30,8 @@ space = [
 
 rand = Random()
 
-FILENAME = 'data/hyperparameters/result.skopt.gz'
+RESULT_FILENAME = 'data/hyperparameters/result.skopt.gz'
+CHECKPOINT_FILENAME = "data/hyperparameters/checkpoint.pkl"
 MINIMIZE_CALLS = int(os.environ.get("MINIMIZE_CALLS", 10))
 AGGREGATED_PARTICLES = int(os.environ.get("AGGREGATED_PARTICLES", 10))
 
@@ -62,13 +64,45 @@ if __name__ == '__main__':
     # Setup colored logs
     coloredlogs.install(level='INFO', style='{', fmt='{name:15s} {levelname} {message}')
 
+    checkpoint_saver = CheckpointSaver(CHECKPOINT_FILENAME,
+                                       compress=9)  # keyword arguments will be passed to `skopt.dump`
+
     try:
-        result = load(FILENAME)
+        result = load(RESULT_FILENAME)
 
     except IOError:
-        result = gp_minimize(objective, space, n_calls=MINIMIZE_CALLS, n_points=10, verbose=True)
 
-        dump(result, filename=FILENAME)
+        # Try to load the checkpoint and if found, use it as stating point
+        try:
+            checkpoint = load(CHECKPOINT_FILENAME)
+
+            logger.info("Found checkpoint, resuming optimization")
+
+            x0 = checkpoint.x_iters
+            y0 = checkpoint.func_vals
+
+            result = gp_minimize(objective, space,
+                                 x0=x0,
+                                 y0=y0,
+                                 n_calls=MINIMIZE_CALLS,
+                                 n_points=10,
+                                 verbose=True,
+                                 callback=[checkpoint_saver]
+                                 )
+
+        except IOError:
+            # There is no checkpoint file, start from scratch
+            pass
+
+        logger.info("No checkpoint file available")
+        result = gp_minimize(objective, space,
+                             n_calls=MINIMIZE_CALLS,
+                             n_points=10,
+                             verbose=True,
+                             callback=[checkpoint_saver]
+                             )
+
+        dump(result, filename=RESULT_FILENAME)
 
     print("Best score=%.4f" % result.fun)
 

@@ -18,7 +18,7 @@ class Map:
 
     best_position: np.ndarray = None  #: Array containing the x,y coordinates of the global best
     # Initialize best fitness to an absurd high value
-    best_fitness: float = sys.maxsize  #: Value of the fitness in the best position
+    best_fitness: float = sys.float_info.max  #: Value of the fitness in the best position
 
     def __init__(self, image_name: string):
         self.resource_map = detect_resources(image_name)

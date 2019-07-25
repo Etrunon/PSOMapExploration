@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 import os
 import time
 from random import Random
@@ -8,6 +9,7 @@ import coloredlogs
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+from joblib import Parallel, delayed
 from skopt import gp_minimize
 from skopt.callbacks import CheckpointSaver
 from skopt.plots import plot_evaluations, plot_objective
@@ -34,6 +36,7 @@ RESULT_FILENAME = 'data/hyperparameters/result.skopt.gz'
 CHECKPOINT_FILENAME = "data/hyperparameters/checkpoint.pkl"
 MINIMIZE_CALLS = int(os.environ.get("MINIMIZE_CALLS", 10))
 AGGREGATED_PARTICLES = int(os.environ.get("AGGREGATED_PARTICLES", 10))
+PARALLEL_COUNT = multiprocessing.cpu_count()
 
 timing: List[float] = []
 
@@ -42,22 +45,31 @@ logger = logging.getLogger(__name__)
 
 @use_named_args(space)
 def objective(**kwargs):
-    logger.info(kwargs)
+    logger.info("Calling objective function with args %s", kwargs)
 
-    aggregated_best_individuals: List[float] = []
+    # Save start time
     start = time.time()
 
-    for i in range(0, AGGREGATED_PARTICLES):
-        best_particle = main(rand, **kwargs, min_generations=200, show_gui=False)
-        aggregated_best_individuals.append(best_particle.best_fitness)
+    # evaluate points in parallel
+    particles = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
+        delayed(main)(rand, **kwargs, min_generations=200, show_gui=False) for i in
+        range(AGGREGATED_PARTICLES)
+    )
 
+    best_fitnesses: List[float] = list(map(lambda particle: particle.best_fitness, particles))
+
+    # Save the duration of the run
     end = time.time()
     objective_duration = end - start
     timing.append(objective_duration)
-    logger.info('Objective aggregated %d particles and returns the mean %d', AGGREGATED_PARTICLES,
-                np.mean(aggregated_best_individuals))
 
-    return np.mean(aggregated_best_individuals)
+    logger.info(
+        'Objective function aggregated %d particles and returns the mean %d',
+        AGGREGATED_PARTICLES,
+        np.mean(best_fitnesses)
+    )
+
+    return np.mean(best_fitnesses)
 
 
 if __name__ == '__main__':

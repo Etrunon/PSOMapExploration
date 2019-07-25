@@ -1,5 +1,6 @@
 import logging
 import os
+import pickle
 import time
 from random import Random
 from typing import List
@@ -8,7 +9,8 @@ import coloredlogs
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from skopt import gp_minimize
+from sklearn.externals.joblib import Parallel, delayed
+from skopt import Optimizer
 from skopt.callbacks import CheckpointSaver
 from skopt.plots import plot_evaluations, plot_objective
 from skopt.space import Integer, Real
@@ -32,6 +34,8 @@ rand = Random()
 
 RESULT_FILENAME = 'data/hyperparameters/result.skopt.gz'
 CHECKPOINT_FILENAME = "data/hyperparameters/checkpoint.pkl"
+OPTIMIZER_FILENAME = "data/hyperparameters/optimizer.pkl"
+
 MINIMIZE_CALLS = int(os.environ.get("MINIMIZE_CALLS", 10))
 AGGREGATED_PARTICLES = int(os.environ.get("AGGREGATED_PARTICLES", 10))
 
@@ -44,20 +48,26 @@ logger = logging.getLogger(__name__)
 def objective(**kwargs):
     logger.info(kwargs)
 
-    aggregated_best_individuals: List[float] = []
     start = time.time()
 
-    for i in range(0, AGGREGATED_PARTICLES):
-        best_particle = main(rand, **kwargs, min_generations=200, show_gui=False)
-        aggregated_best_individuals.append(best_particle.best_fitness)
+    particles = Parallel(n_jobs=4, verbose=51)(
+        delayed(main)(rand, **kwargs, min_generations=200, show_gui=False) for i in
+        range(AGGREGATED_PARTICLES))  # evaluate points in parallel
 
+    best_fitnesses: List[float] = list(map(lambda particle: particle.best_fitness, particles))
+
+    # Save the duration of the run
     end = time.time()
     objective_duration = end - start
     timing.append(objective_duration)
-    logger.info('Objective aggregated %d particles and returns the mean %d', AGGREGATED_PARTICLES,
-                np.mean(aggregated_best_individuals))
 
-    return np.mean(aggregated_best_individuals)
+    logger.info(
+        'Objective function aggregated %d particles and returns the mean %d',
+        AGGREGATED_PARTICLES,
+        np.mean(best_fitnesses)
+    )
+
+    return np.mean(best_fitnesses)
 
 
 if __name__ == '__main__':
@@ -67,41 +77,54 @@ if __name__ == '__main__':
     checkpoint_saver = CheckpointSaver(CHECKPOINT_FILENAME,
                                        compress=9)  # keyword arguments will be passed to `skopt.dump`
 
+    result = None
+
     try:
         result = load(RESULT_FILENAME)
+        logger.info("Result file loaded")
 
     except IOError:
+        # There is no result file
+        pass
 
-        # Try to load the checkpoint and if found, use it as stating point
+    if not result:
+        # Try to load the optimizer and if found, use it instead of starting from scratch
+
+        optimizer = None
         try:
-            checkpoint = load(CHECKPOINT_FILENAME)
 
-            logger.info("Found checkpoint, resuming optimization")
-
-            x0 = checkpoint.x_iters
-            y0 = checkpoint.func_vals
-
-            result = gp_minimize(objective, space,
-                                 x0=x0,
-                                 y0=y0,
-                                 n_calls=MINIMIZE_CALLS,
-                                 n_points=10,
-                                 verbose=True,
-                                 callback=[checkpoint_saver]
-                                 )
+            with open(OPTIMIZER_FILENAME, 'rb') as f:
+                optimizer = pickle.load(f)
+                logger.info("Cached optimizer loaded")
 
         except IOError:
-            # There is no checkpoint file, start from scratch
+            # There is no saved optimizer file, start from scratch
+            logger.info("No cached optimizer available")
             pass
 
-        logger.info("No checkpoint file available")
-        result = gp_minimize(objective, space,
-                             n_calls=MINIMIZE_CALLS,
-                             n_points=10,
-                             verbose=True,
-                             callback=[checkpoint_saver]
-                             )
+        if not optimizer:
+            # There is no optimizer available, create one from scratch
+            optimizer = Optimizer(
+                dimensions=space,
+                base_estimator='gp'
+            )
 
+        POINTS = 1
+        for i in range(MINIMIZE_CALLS):
+            x = optimizer.ask(n_points=POINTS)  # x is a list of n_points points
+
+            # y = Parallel(n_jobs=4, verbose=1)(delayed(objective)(v) for v in x)  # evaluate points in parallel
+            y = objective(x[0])
+
+            # logger.info("%s %s", x, y)
+
+            result = optimizer.tell(x, y)
+
+            # Cache the optimizer to resume work later
+            with open(OPTIMIZER_FILENAME, 'wb') as f:
+                pickle.dump(optimizer, f)
+
+        # Cache the result file
         dump(result, filename=RESULT_FILENAME)
 
     print("Best score=%.4f" % result.fun)

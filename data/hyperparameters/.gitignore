@@ -3,3 +3,6 @@
 
 # Checkpoint file
 checkpoint.pkl
+
+# cached optimizer
+optimizer.pkl

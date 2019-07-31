@@ -21,13 +21,13 @@ from src.main import main
 space = [
     # Integer(1, 200, name='min_generations'),
     Integer(1, 200, name='termination_variance'),
-    Integer(2, 200, name='maximum_velocity'),
-    Integer(1, 1000, name='max_generations'),
-    Integer(10, 100, name='resource_range'),
+    Integer(120, 200, name='maximum_velocity'),
+    Integer(120, 1000, name='max_generations'),
+    Integer(80, 100, name='resource_range'),
     Real(0, 1, name='cognitive_rate'),
-    Real(0, 1, name='inertia_rate'),
-    Real(0, 1, name='social_rate'),
-    Integer(1, 10, name='population_size')
+    Real(0.8, 1, name='inertia_rate'),
+    Real(0.8, 1, name='social_rate'),
+    # Integer(1, 10, name='population_size')
 ]
 
 rand = Random()
@@ -37,7 +37,7 @@ CHECKPOINT_FILENAME = "data/hyperparameters/checkpoint.pkl"
 MINIMIZE_CALLS = int(os.environ.get("MINIMIZE_CALLS", 10))
 AGGREGATED_PARTICLES = int(os.environ.get("AGGREGATED_PARTICLES", 10))
 PARALLEL_COUNT = multiprocessing.cpu_count()
-
+SKIP_TO_RESULT = os.environ.get("SKIP_TO_RESULT", "false") == "true"
 timing: List[float] = []
 
 logger = logging.getLogger(__name__)
@@ -78,6 +78,7 @@ if __name__ == '__main__':
 
     checkpoint_saver = CheckpointSaver(CHECKPOINT_FILENAME,
                                        compress=9)  # keyword arguments will be passed to `skopt.dump`
+    result = None
 
     try:
         result = load(RESULT_FILENAME)
@@ -88,31 +89,36 @@ if __name__ == '__main__':
         try:
             checkpoint = load(CHECKPOINT_FILENAME)
 
-            logger.info("Found checkpoint, resuming optimization")
+            if not SKIP_TO_RESULT:
 
-            x0 = checkpoint.x_iters
-            y0 = checkpoint.func_vals
+                logger.info("Found checkpoint, resuming optimization")
 
-            result = gp_minimize(objective, space,
-                                 x0=x0,
-                                 y0=y0,
-                                 n_calls=MINIMIZE_CALLS,
-                                 n_points=10,
-                                 verbose=True,
-                                 callback=[checkpoint_saver]
-                                 )
+                x0 = checkpoint.x_iters
+                y0 = checkpoint.func_vals
+
+                result = gp_minimize(objective, space,
+                                     x0=x0,
+                                     y0=y0,
+                                     n_calls=MINIMIZE_CALLS,
+                                     n_points=10,
+                                     verbose=True,
+                                     callback=[checkpoint_saver]
+                                     )
+            else:
+                result = load(CHECKPOINT_FILENAME)
 
         except IOError:
             # There is no checkpoint file, start from scratch
             pass
 
-        logger.info("No checkpoint file available")
-        result = gp_minimize(objective, space,
-                             n_calls=MINIMIZE_CALLS,
-                             n_points=10,
-                             verbose=True,
-                             callback=[checkpoint_saver]
-                             )
+        if not result:
+            logger.info("No checkpoint file available")
+            result = gp_minimize(objective, space,
+                                 n_calls=MINIMIZE_CALLS,
+                                 n_points=10,
+                                 verbose=True,
+                                 callback=[checkpoint_saver]
+                                 )
 
         dump(result, filename=RESULT_FILENAME)
 

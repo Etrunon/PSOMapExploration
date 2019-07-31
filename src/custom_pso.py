@@ -63,6 +63,10 @@ class CustomPSO(PSO):
         """
         fitnesses = []
 
+        if num_evaluations > args["max_evaluations"]:
+            logger.warning('End for maximum evaluation')
+            return True
+
         for index, p in enumerate(population):
             fitnesses = np.insert(fitnesses, index, p.fitness)
         variance = np.var(fitnesses)

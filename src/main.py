@@ -15,7 +15,7 @@ from matplotlib.patches import Circle
 from src.algorithms.algo1 import Algo1
 from src.configuration import CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
     SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, MAX_GENERATIONS, \
-    RESOURCE_RANGE
+    RESOURCE_RANGE, MAX_EVALUATIONS
 from src.custom_pso import custom_observer, CustomPSO
 from src.data_structures.Map import Map
 from src.data_structures.Particle import Particle
@@ -29,7 +29,7 @@ PARALLELIZE = os.environ.get("PARALLELIZE", "false") == "true"
 
 
 def main(rand: Random, min_generations: int, max_generations: int, termination_variance: int, maximum_velocity: int,
-         resource_range: int, inertia_rate: float, social_rate: float, cognitive_rate: float, population_size: int,
+         resource_range: int, inertia_rate: float, social_rate: float, cognitive_rate: float, population_size=10,
          show_gui=True) -> Particle:
     # Observers (custom logger that are notified while the algorithm runs)
     observers = [custom_observer]
@@ -90,7 +90,7 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
                                              maximize=False,
                                              bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
                                              # neighborhood_size=5,
-                                             max_evaluations=500,
+                                             max_evaluations=MAX_EVALUATIONS,
                                              # statistics_file=stat_file,
                                              # individuals_file=ind_file)
                                              inertia=inertia_rate,
@@ -107,7 +107,7 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
                                              maximize=False,
                                              bounder=inspyred.ec.Bounder(0, max(world_map.map_dim)),
                                              # neighborhood_size=5,
-                                             max_evaluations=500,
+                                             max_evaluations=MAX_EVALUATIONS,
                                              # statistics_file=stat_file,
                                              # individuals_file=ind_file)
                                              inertia=inertia_rate,

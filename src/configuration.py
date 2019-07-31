@@ -6,6 +6,7 @@ TERMINATION_VARIANCE = 200  # TODO: find optimal value
 MIN_GENERATIONS = int(os.environ.get("MIN_GENERATIONS", 100))  # T0ODO: find optimal value
 MAX_GENERATIONS = int(os.environ.get("MAX_GENERATIONS", 1000))  # TODO: find optimal value
 IMAGE_NAME = os.environ["IMAGE_NAME"]
+MAX_EVALUATIONS = int(os.environ.get("MAX_EVALUATIONS", 300))
 
 COGNITIVE_RATE = 0.50
 SOCIAL_RATE = 0.50

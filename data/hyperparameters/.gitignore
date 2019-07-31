@@ -2,4 +2,4 @@
 *.gz
 
 # Checkpoint file
-checkpoint.pkl
+*.pkl

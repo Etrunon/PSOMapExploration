@@ -91,10 +91,15 @@ if __name__ == '__main__':
 
             if not SKIP_TO_RESULT:
 
-                logger.info("Found checkpoint, resuming optimization")
-
                 x0 = checkpoint.x_iters
                 y0 = checkpoint.func_vals
+
+                # Number of previous iterations
+                previous_runs = len(y0)
+
+                MINIMIZE_CALLS = MINIMIZE_CALLS - previous_runs
+                logger.info("Found checkpoint, resuming optimization from iteration %d. Remaining %d", previous_runs,
+                            MINIMIZE_CALLS)
 
                 result = gp_minimize(objective, space,
                                      x0=x0,
@@ -102,6 +107,7 @@ if __name__ == '__main__':
                                      n_calls=MINIMIZE_CALLS,
                                      n_points=10,
                                      verbose=True,
+                                     n_random_starts=0,
                                      callback=[checkpoint_saver]
                                      )
             else:

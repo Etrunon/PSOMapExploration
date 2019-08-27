@@ -17,14 +17,15 @@ from skopt.plots import plot_evaluations, plot_objective
 from skopt.space import Integer, Real
 from skopt.utils import use_named_args, dump, load
 
+from src.configuration import MIN_GENERATIONS
 from src.main import main
 
 space = [
     # Integer(1, 200, name='min_generations'),
-    Integer(1, 200, name='termination_variance'),
-    Integer(120, 200, name='maximum_velocity'),
-    Integer(120, 1000, name='max_generations'),
-    Integer(80, 100, name='resource_range'),
+    Integer(1, 500, name='termination_variance'),
+    Integer(30, 200, name='maximum_velocity'),
+    Integer(10, 200, name='max_generations'),
+    Integer(50, 100, name='resource_range'),
     Real(0, 1, name='cognitive_rate'),
     Real(0, 1, name='inertia_rate'),
     # Real(0, 1, name='social_rate'),
@@ -63,7 +64,7 @@ def objective(**kwargs):
 
     # evaluate points in parallel
     particles = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
-        delayed(main)(rand, **kwargs, min_generations=200, show_gui=False) for i in
+        delayed(main)(None, **kwargs, min_generations=MIN_GENERATIONS, show_gui=False) for i in
         range(AGGREGATED_PARTICLES)
     )
 

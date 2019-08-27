@@ -10,15 +10,16 @@ from src import main
 from src.configuration import MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, \
     INERTIA_RATE, COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE
 
-RUNS = int(os.environ.get("RUNS", 10))
+RUNS = int(os.environ.get("RUNS", 3))
 PARALLEL_COUNT = multiprocessing.cpu_count()
+
+# Initialize the random seed
+rand = Random()
 
 if __name__ == '__main__':
 
     results: List = []
 
-    # Initialize the random seed
-    rand = Random()
 
     # evaluate points in parallel
     parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(

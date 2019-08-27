@@ -1,68 +1,59 @@
+import multiprocessing
 import time
 from random import Random
 from typing import List
 
 import matplotlib.pyplot as plt
+from joblib import Parallel, delayed
 
 from src import main
 from src.configuration import MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, \
-    INERTIA_RATE, COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE, SHOW_GUI
+    INERTIA_RATE, COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE
 from src.data_structures.Particle import Particle
 
 timing: List[float] = []
 optimized_timings = []
 
 RUNS = 100
+PARALLEL_COUNT = multiprocessing.cpu_count()
 
 if __name__ == '__main__':
 
     results: List[Particle] = []
     optimized_results = []
 
-    for i in range(RUNS):
-        # Save start time
-        start = time.time()
+    # Save start time
+    start = time.time()
 
-        # Initialize the random seed
-        rand = Random()
+    # Initialize the random seed
+    rand = Random()
 
-        result = main.main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
+    parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
+        delayed(main.main)(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
                            RESOURCE_RANGE,
                            INERTIA_RATE, SOCIAL_RATE, COGNITIVE_RATE,
-                           POPULATION_SIZE, SHOW_GUI)
+                           POPULATION_SIZE, False)
+        for i in range(RUNS)
+    )
 
-        results.append(result)
+    for result in parallel_results:
+        results.append(result['particle'])
+        timing.append(result['duration'])
 
-        # Save the duration of the run
-        end = time.time()
-        duration = end - start
-        timing.append(duration)
+    # Initialize the random seed
+    rand = Random()
 
-    for i in range(RUNS):
-        # Save start time
-        start = time.time()
+    parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
+        delayed(main.main)(rand, MIN_GENERATIONS, 935, 129, 165,
+                           99,
+                           0.60, 1.12, 0.88,
+                           POPULATION_SIZE, False)
+        for i in range(RUNS)
+    )
 
-        # Initialize the random seed
-        rand = Random()
-
-        result = main.main(rand,
-                           MIN_GENERATIONS,
-                           276,
-                           133,
-                           173,
-                           100,
-                           0.8750,
-                           0.9362,
-                           0.8040,
-                           POPULATION_SIZE,
-                           SHOW_GUI)
-
-        optimized_results.append(result)
-
-        # Save the duration of the run
-        end = time.time()
-        objective_duration = end - start
-        optimized_timings.append(objective_duration)
+    for result in parallel_results:
+        optimized_results.append(result['particle'])
+        optimized_timings.append(result['duration'])
 
     fitnesses = list(map(lambda particle: particle.best_fitness, results))
     optimized_fitnesses = list(map(lambda particle: particle.best_fitness, optimized_results))

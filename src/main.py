@@ -85,6 +85,10 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
 
     algorithm = Algo1(world_map, maximum_velocity, resource_range, save_history=show_gui)
 
+    # initialize random if not provided
+    if not rand:
+        rand = Random()
+
     # Instantiate the custom PSO instance with the specific algorithm
     custom_pso = CustomPSO(rand, algorithm, min_generations, max_generations, termination_variance, maximum_velocity)
 

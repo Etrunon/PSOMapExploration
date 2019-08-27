@@ -14,7 +14,7 @@ from src.data_structures.Particle import Particle
 logger = logging.getLogger(__name__)
 
 
-def custom_observer(population, num_generations, num_evaluations, args) -> None:
+def log_observer(population, num_generations, num_evaluations, args) -> None:
     """
     Log the best individual for each generation
     """
@@ -110,10 +110,13 @@ class CustomPSO(PSO):
             best_neighbour = min(neighbors, key=lambda x: x.candidate.best_fitness).candidate
             particle: Particle = x.candidate
 
+            cognitive_velocity = cognitive_rate * random.random() * (particle.best_position - particle.current_position)
+            social_velocity = social_rate * random.random() * (best_neighbour.best_position - particle.current_position)
+
             new_velocity = (
                     particle.velocity * inertia +
-                    cognitive_rate * random.random() * (particle.best_position - particle.current_position) +
-                    social_rate * random.random() * (best_neighbour.best_position - particle.current_position)
+                    cognitive_velocity +
+                    social_velocity
             )
 
             # Limit the velocity up to a maximum

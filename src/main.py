@@ -10,13 +10,13 @@ from PIL import Image
 from matplotlib import pyplot
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
-from matplotlib.patches import Circle
+from matplotlib.patches import Circle, Rectangle
 
 from src.algorithms.algo1 import Algo1
 from src.configuration import CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
     SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, MAX_GENERATIONS, \
     RESOURCE_RANGE, MAX_EVALUATIONS, RANDOM_SEED
-from src.custom_pso import custom_observer, CustomPSO
+from src.custom_pso import log_observer, CustomPSO
 from src.data_structures.Map import Map
 from src.data_structures.Particle import Particle
 
@@ -30,9 +30,13 @@ PARALLELIZE = os.environ.get("PARALLELIZE", "false") == "true"
 
 def main(rand: Random, min_generations: int, max_generations: int, termination_variance: int, maximum_velocity: int,
          resource_range: int, inertia_rate: float, social_rate: float, cognitive_rate: float, population_size=10,
-         show_gui=True) -> Particle:
+         show_gui=True, custom_observer=None) -> Particle:
+
     # Observers (custom logger that are notified while the algorithm runs)
-    observers = [custom_observer]
+    observers = [log_observer]
+
+    if custom_observer:
+        observers.append(custom_observer)
 
     # ######################################
     # #  Plot part   #######################
@@ -127,8 +131,12 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
         # Plot the best location found
         best_position = (best_particle.best_position[0], best_particle.best_position[1])
 
-        end = Circle(best_position, resource_range, facecolor="purple", alpha=0.5)
-        ax.add_patch(end)
+        rectangle = Rectangle((best_position[0] - resource_range, best_position[1] - resource_range),
+                              resource_range * 2, resource_range * 2, facecolor="purple", alpha=0.4)
+        # end = Circle(best_position, resource_range, facecolor="purple", alpha=0.5)
+        ax.add_patch(rectangle)
+        # ax.add_patch(end)
+
         # Show the best fitness value
         ax.annotate("{:.0f}".format(best_particle.best_fitness), best_position, color='white',
                     fontsize='x-large', fontweight='bold')
@@ -173,4 +181,4 @@ if __name__ == "__main__":
     rand = Random(RANDOM_SEED)
 
     main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, INERTIA_RATE,
-         COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE, SHOW_GUI)
+         SOCIAL_RATE, COGNITIVE_RATE, POPULATION_SIZE, SHOW_GUI)

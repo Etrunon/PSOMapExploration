@@ -43,7 +43,7 @@ class Algo1(Algorithm):
         id += 1
 
         return Particle(starting_position=random_point,
-                        velocity=np.array(velocity, np.uintc),
+                        velocity=np.array(velocity, np.float),
                         resource_range=self.resource_range,
                         starting_base=CITY_POSITION,
                         id=id,
@@ -95,7 +95,8 @@ class Algo1(Algorithm):
 
         for x in range(self.resource_range, self.world_map.map_dim[0] - self.resource_range):
             for y in range(self.resource_range, self.world_map.map_dim[1] - self.resource_range):
-                sensor = Particle((x, y), np.array((1, 1), np.uintc), CITY_POSITION, self.resource_range, None, 0)
+                sensor = Particle((x, y), np.array((1, 1), np.uintc), CITY_POSITION, self.resource_range,
+                                  self.world_map, 0, False)
                 landscape[x][y] = self.compute_score(sensor)
 
         return landscape

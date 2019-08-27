@@ -1,6 +1,8 @@
 import logging
 import os
+import time
 from random import Random
+from typing import Dict, Union
 
 import coloredlogs
 import inspyred
@@ -30,7 +32,9 @@ PARALLELIZE = os.environ.get("PARALLELIZE", "false") == "true"
 
 def main(rand: Random, min_generations: int, max_generations: int, termination_variance: int, maximum_velocity: int,
          resource_range: int, inertia_rate: float, social_rate: float, cognitive_rate: float, population_size=10,
-         show_gui=True, custom_observer=None) -> Particle:
+         show_gui=True, custom_observer=None) -> Dict[str, Union[float, Particle]]:
+    # Save start time
+    start = time.time()
 
     # Observers (custom logger that are notified while the algorithm runs)
     observers = [log_observer]
@@ -127,6 +131,10 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
 
     logger.info('Fittest individual: \n%s', best_particle)
 
+    # Save the duration of the run
+    end = time.time()
+    duration = end - start
+
     if show_gui:
         # Plot the best location found
         best_position = (best_particle.best_position[0], best_particle.best_position[1])
@@ -168,7 +176,8 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
 
         matplotlib.pyplot.show(block=True)
 
-    return best_particle
+    return {'particle': best_particle, 'duration': duration, 'evaluations': custom_pso.num_evaluations,
+            'generations': custom_pso.num_generations}
 
 
 if __name__ == "__main__":

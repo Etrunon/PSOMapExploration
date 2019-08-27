@@ -56,7 +56,7 @@ def objective(**kwargs):
         range(AGGREGATED_PARTICLES)
     )
 
-    best_fitnesses: List[float] = list(map(lambda particle: particle.best_fitness, particles))
+    best_fitnesses: List[float] = list(map(lambda result: result['particle'].best_fitness, particles))
 
     # Save the duration of the run
     end = time.time()

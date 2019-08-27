@@ -1,58 +1,41 @@
 import csv
-import time
+import os
 from random import Random
 from typing import List
 
 from src import main
 from src.configuration import MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, \
     INERTIA_RATE, COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE
-from src.data_structures.Particle import Particle
 
-timing: List[float] = []
-
-RUNS = 100
-
-# global variable to save evaluations
-EVALUATIONS = 0
-
-
-def evaluations_observer(population, num_generations, num_evaluations, args) -> None:
-    global EVALUATIONS
-
-    EVALUATIONS = num_evaluations
-
+RUNS = int(os.environ.get("RUNS", 100))
 
 if __name__ == '__main__':
 
-    results: List[Particle] = []
+    results: List = []
 
     for i in range(RUNS):
-        # Save start time
-        start = time.time()
-
         # Initialize the random seed
         rand = Random()
 
         result = main.main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
                            RESOURCE_RANGE, INERTIA_RATE,
-                           COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE, False, evaluations_observer)
+                           COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE, False)
 
-        results.append(EVALUATIONS)
+        particle = result['particle']
 
-    # fig, ax_lst = plt.subplots(1, 1)
-    #
-    # plt.scatter(timing, fitnesses, c='r', label="Random parameters")
-    # plt.scatter(optimized_timings, optimized_fitnesses, c='b', label="Optimized parameters")
+        results.append(
+            {'duration': result['duration'],
+             'evaluations': result['evaluations'],
+             'generations': result['generations'],
+             'fitness': particle.best_fitness,
+             'position_x': particle.best_position[0],
+             'position_y': particle.best_position[1]}
+        )
 
-    # plt.xlabel('Time (s)')
-    # plt.ylabel('Fitness')
-    #
-    # plt.legend(loc='lower right')
-    #
-    # plt.show(block=True)
-
+    fields = ['duration', 'evaluations', 'generations', 'fitness', 'position_x', 'position_y']
     with open('data/evaluations.csv', 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile, delimiter=',')
-        writer.writerow(results)
+        writer = csv.DictWriter(csvfile, delimiter=',', fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(results)
 
     print(results)

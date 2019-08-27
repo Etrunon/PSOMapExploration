@@ -25,6 +25,18 @@ Parameter ``map-preview-scale`` manage the scale with 1 meaning 1 meter per pixe
 Other generation parameters are in the setting file. 
 
 
+
+## How to run the project
+
+```bash
+
+export IMAGE_NAME=map6.png
+
+python -m src.main
+
+```
+
+
 #### TODO list (30-05-2019)
 Problems to be solved
 - [x] Add comments to main file (now it is a bit obscure)

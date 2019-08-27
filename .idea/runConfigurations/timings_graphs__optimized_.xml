@@ -1,20 +1,27 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="sko (parallelize)" type="PythonConfigurationType" factoryName="Python" folderName="sko">
+  <configuration default="false" name="timings graphs (optimized)" type="PythonConfigurationType" factoryName="Python">
     <module name="Bio-Inspired" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
+      <env name="SHOW_GUI" value="false" />
       <env name="IMAGE_NAME" value="map6.png" />
-      <env name="PARALLELIZE" value="true" />
+      <env name="TERMINATION_VARIANCE" value="133" />
+      <env name="MAXIMUMX_VELOCITY" value="173" />
+      <env name="MAX_GENERATIONS" value="276" />
+      <env name="RESOURCE_RANGE" value="100" />
+      <env name="COGNITIVE_RATE" value="0.9362" />
+      <env name="INERTIA_RATE" value="0.8750" />
+      <env name="SOCIAL_RATE" value="0.8040" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="IS_MODULE_SDK" value="true" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/sko.py" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/graphs.py" />
     <option name="PARAMETERS" value="" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="true" />

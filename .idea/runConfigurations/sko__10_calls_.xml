@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="sko (10 calls)" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="sko (10 calls)" type="PythonConfigurationType" factoryName="Python" folderName="sko">
     <module name="Bio-Inspired" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />

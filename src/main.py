@@ -66,8 +66,8 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
         ax.set_aspect('equal')
 
         # Plot the starting position as a red circle
-        start = Circle(CITY_POSITION, 10, facecolor="red", alpha=1)
-        ax.add_patch(start)
+        starting_city = Circle(CITY_POSITION, 10, facecolor="red", alpha=1)
+        ax.add_patch(starting_city)
 
         # Use minimal padding inside the figure
         matplotlib.pyplot.tight_layout(pad=0)

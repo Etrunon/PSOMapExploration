@@ -24,7 +24,7 @@ if __name__ == '__main__':
     parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
         delayed(main.main)(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
                            RESOURCE_RANGE, INERTIA_RATE,
-                           COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE, False) for i in
+                           SOCIAL_RATE, COGNITIVE_RATE, POPULATION_SIZE, False) for i in
         range(RUNS)
     )
 

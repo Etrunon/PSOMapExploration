@@ -37,7 +37,8 @@ class Algo1(Algorithm):
                 break
 
         # // is integer division
-        velocity = (random.randint(1, self.maximum_velocity // 2), random.randint(1, self.maximum_velocity // 2))
+        velocity = (random.randint(- self.maximum_velocity // 2, self.maximum_velocity // 2),
+                    random.randint(- self.maximum_velocity // 2, self.maximum_velocity // 2))
 
         id += 1
 

@@ -23,13 +23,13 @@ if __name__ == '__main__':
     # evaluate points in parallel
     parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
         delayed(main.main)(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
-                           RESOURCE_RANGE, INERTIA_RATE,
-                           SOCIAL_RATE, COGNITIVE_RATE, POPULATION_SIZE, False) for i in
-        range(RUNS)
+                           RESOURCE_RANGE,
+                           INERTIA_RATE, SOCIAL_RATE, COGNITIVE_RATE,
+                           POPULATION_SIZE, False)
+        for i in range(RUNS)
     )
 
     for result in parallel_results:
-
         particle = result['particle']
 
         results.append(

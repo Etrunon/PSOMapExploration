@@ -27,8 +27,9 @@ if __name__ == '__main__':
         rand = Random()
 
         result = main.main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
-                           RESOURCE_RANGE, INERTIA_RATE,
-                           COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE, SHOW_GUI)
+                           RESOURCE_RANGE,
+                           INERTIA_RATE, SOCIAL_RATE, COGNITIVE_RATE,
+                           POPULATION_SIZE, SHOW_GUI)
 
         results.append(result)
 

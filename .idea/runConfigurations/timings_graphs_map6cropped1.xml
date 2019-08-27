@@ -1,12 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="timings graphs" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="timings graphs map6cropped1" type="PythonConfigurationType" factoryName="Python">
     <module name="Bio-Inspired" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
       <env name="SHOW_GUI" value="false" />
-      <env name="IMAGE_NAME" value="map6.png" />
+      <env name="IMAGE_NAME" value="map6-cropped1.png" />
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />

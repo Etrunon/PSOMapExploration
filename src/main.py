@@ -15,7 +15,7 @@ from matplotlib.patches import Circle
 from src.algorithms.algo1 import Algo1
 from src.configuration import CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
     SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, MAX_GENERATIONS, \
-    RESOURCE_RANGE, MAX_EVALUATIONS
+    RESOURCE_RANGE, MAX_EVALUATIONS, RANDOM_SEED
 from src.custom_pso import custom_observer, CustomPSO
 from src.data_structures.Map import Map
 from src.data_structures.Particle import Particle
@@ -43,6 +43,8 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
 
         # Create a figure, because inspyred library already creates one
         figure: Figure = matplotlib.pyplot.figure(2)
+
+        figure.suptitle(IMAGE_NAME)
 
         # Plot a grid in the figure
         pyplot.grid()
@@ -165,8 +167,10 @@ if __name__ == "__main__":
     # Setup colored logs
     coloredlogs.install(level='INFO', style='{', fmt='{name:15s} {levelname} {message}')
 
+    logger.info('Seed: %d', RANDOM_SEED)
+
     # Initialize the random seed
-    rand = Random()
+    rand = Random(RANDOM_SEED)
 
     main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, INERTIA_RATE,
          COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE, SHOW_GUI)

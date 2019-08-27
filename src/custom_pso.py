@@ -90,9 +90,9 @@ class CustomPSO(PSO):
         """
 
         algorithm: CustomPSO = args["_ec"]
-        inertia = args.setdefault('inertia', 0.5)
-        cognitive_rate = args.setdefault('cognitive_rate', 2.1)
-        social_rate = args.setdefault('social_rate', 2.1)
+        inertia = args['inertia']
+        cognitive_rate = args['cognitive_rate']
+        social_rate = args['social_rate']
 
         if len(algorithm.archive) == 0:
             algorithm.archive = algorithm.population[:]

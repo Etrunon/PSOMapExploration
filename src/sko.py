@@ -25,9 +25,9 @@ space = [
     Integer(120, 200, name='maximum_velocity'),
     Integer(120, 1000, name='max_generations'),
     Integer(80, 100, name='resource_range'),
-    Real(0, 2, name='cognitive_rate'),
-    Real(0, 2, name='inertia_rate'),
-    Real(0, 1, name='social_rate'),
+    Real(0, 1, name='cognitive_rate'),
+    Real(0, 1, name='inertia_rate'),
+    # Real(0, 1, name='social_rate'),
     # Integer(1, 10, name='population_size')
 ]
 
@@ -49,10 +49,12 @@ def objective(**kwargs):
     logger.info("Calling objective function with args %s", kwargs)
 
     cognitive_rate = kwargs['cognitive_rate']
-    social_rate = kwargs['social_rate']
+    # social_rate = kwargs['social_rate']
+    social_rate = 2 - cognitive_rate
+    kwargs['social_rate'] = social_rate
     inertia = kwargs['inertia_rate']
 
-    if (cognitive_rate + social_rate) / 2 <= 1 or (cognitive_rate + social_rate) / 2 > inertia or inertia > 1:
+    if (cognitive_rate + social_rate) / 2 - 1 < 0 or (cognitive_rate + social_rate) / 2 - 1 >= inertia or inertia >= 1:
         logger.warning("velocity parameters are wrong")
         return sys.maxsize
 

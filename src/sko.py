@@ -23,9 +23,9 @@ from src.main import main
 space = [
     # Integer(1, 200, name='min_generations'),
     Integer(1, 500, name='termination_variance'),
-    Integer(30, 200, name='maximum_velocity'),
+    Integer(10, 200, name='maximum_velocity'),
     Integer(10, 200, name='max_generations'),
-    Integer(50, 100, name='resource_range'),
+    Integer(10, 100, name='resource_range'),
     Real(0, 1, name='cognitive_rate'),
     Real(0, 1, name='inertia_rate'),
     # Real(0, 1, name='social_rate'),

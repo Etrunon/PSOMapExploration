@@ -1,6 +1,5 @@
 import multiprocessing
 import time
-from random import Random
 from typing import List
 
 import matplotlib.pyplot as plt
@@ -25,11 +24,8 @@ if __name__ == '__main__':
     # Save start time
     start = time.time()
 
-    # Initialize the random seed
-    rand = Random()
-
     parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
-        delayed(main.main)(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
+        delayed(main.main)(None, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
                            RESOURCE_RANGE,
                            INERTIA_RATE, SOCIAL_RATE, COGNITIVE_RATE,
                            POPULATION_SIZE, False)
@@ -40,13 +36,11 @@ if __name__ == '__main__':
         results.append(result['particle'])
         timing.append(result['duration'])
 
-    # Initialize the random seed
-    rand = Random()
 
     parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
-        delayed(main.main)(rand, MIN_GENERATIONS, 935, 129, 165,
-                           99,
-                           0.60, 1.12, 0.88,
+        delayed(main.main)(None, MIN_GENERATIONS, 168, 32, 137,
+                           100,
+                           0.94, 1.55, 0.45,
                            POPULATION_SIZE, False)
         for i in range(RUNS)
     )

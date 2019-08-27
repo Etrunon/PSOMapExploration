@@ -1,25 +1,34 @@
 import csv
+import multiprocessing
 import os
 from random import Random
 from typing import List
+
+from joblib import Parallel, delayed
 
 from src import main
 from src.configuration import MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, \
     INERTIA_RATE, COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE
 
-RUNS = int(os.environ.get("RUNS", 100))
+RUNS = int(os.environ.get("RUNS", 10))
+PARALLEL_COUNT = multiprocessing.cpu_count()
 
 if __name__ == '__main__':
 
     results: List = []
 
-    for i in range(RUNS):
-        # Initialize the random seed
-        rand = Random()
+    # Initialize the random seed
+    rand = Random()
 
-        result = main.main(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
+    # evaluate points in parallel
+    parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
+        delayed(main.main)(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
                            RESOURCE_RANGE, INERTIA_RATE,
-                           COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE, False)
+                           COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE, False) for i in
+        range(RUNS)
+    )
+
+    for result in parallel_results:
 
         particle = result['particle']
 

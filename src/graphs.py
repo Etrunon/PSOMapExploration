@@ -25,10 +25,14 @@ if __name__ == '__main__':
     start = time.time()
 
     parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
-        delayed(main.main)(None, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
+        delayed(main.main)(None,
+                           MIN_GENERATIONS, MAX_GENERATIONS,
+                           TERMINATION_VARIANCE,
+                           MAXIMUM_VELOCITY,
                            RESOURCE_RANGE,
                            INERTIA_RATE, SOCIAL_RATE, COGNITIVE_RATE,
-                           POPULATION_SIZE, False)
+                           POPULATION_SIZE,
+                           False)
         for i in range(RUNS)
     )
 
@@ -36,12 +40,15 @@ if __name__ == '__main__':
         results.append(result['particle'])
         timing.append(result['duration'])
 
-
     parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
-        delayed(main.main)(None, MIN_GENERATIONS, 182, 440, 64,
+        delayed(main.main)(None,
+                           MIN_GENERATIONS, 154,
+                           230,
+                           137,
                            100,
-                           0.89, 1.91, 0.09,
-                           POPULATION_SIZE, False)
+                           0.78, 1.6, 0.40,
+                           16,
+                           False)
         for i in range(RUNS)
     )
 

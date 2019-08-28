@@ -88,8 +88,7 @@ if __name__ == '__main__':
     # Setup colored logs
     coloredlogs.install(level='INFO', style='{', fmt='{name:15s} {levelname} {message}')
 
-    checkpoint_saver = CheckpointSaver(CHECKPOINT_FILENAME,
-                                       compress=9)  # keyword arguments will be passed to `skopt.dump`
+    checkpoint_saver = CheckpointSaver(CHECKPOINT_FILENAME)  # keyword arguments will be passed to `skopt.dump`
     result = None
 
     try:

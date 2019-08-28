@@ -29,7 +29,7 @@ space = [
     Real(0, 1, name='cognitive_rate'),
     Real(0, 1, name='inertia_rate'),
     # Real(0, 1, name='social_rate'),
-    # Integer(1, 10, name='population_size')
+    Integer(2, 20, name='population_size')
 ]
 
 rand = Random()

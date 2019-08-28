@@ -38,9 +38,9 @@ if __name__ == '__main__':
 
 
     parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
-        delayed(main.main)(None, MIN_GENERATIONS, 168, 32, 137,
+        delayed(main.main)(None, MIN_GENERATIONS, 182, 440, 64,
                            100,
-                           0.94, 1.55, 0.45,
+                           0.89, 1.91, 0.09,
                            POPULATION_SIZE, False)
         for i in range(RUNS)
     )

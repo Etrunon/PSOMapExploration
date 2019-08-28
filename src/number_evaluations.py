@@ -1,7 +1,6 @@
 import csv
 import multiprocessing
 import os
-from random import Random
 from typing import List
 
 from joblib import Parallel, delayed
@@ -10,11 +9,8 @@ from src import main
 from src.configuration import MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, RESOURCE_RANGE, \
     INERTIA_RATE, COGNITIVE_RATE, SOCIAL_RATE, POPULATION_SIZE
 
-RUNS = int(os.environ.get("RUNS", 3))
+RUNS = int(os.environ.get("RUNS", 100))
 PARALLEL_COUNT = multiprocessing.cpu_count()
-
-# Initialize the random seed
-rand = Random()
 
 if __name__ == '__main__':
 
@@ -23,7 +19,7 @@ if __name__ == '__main__':
 
     # evaluate points in parallel
     parallel_results = Parallel(n_jobs=PARALLEL_COUNT, verbose=51)(
-        delayed(main.main)(rand, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
+        delayed(main.main)(None, MIN_GENERATIONS, MAX_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY,
                            RESOURCE_RANGE,
                            INERTIA_RATE, SOCIAL_RATE, COGNITIVE_RATE,
                            POPULATION_SIZE, False)

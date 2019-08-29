@@ -23,16 +23,22 @@ Running under other OSes has not been tested.
 If matplotlib creates problems while drawing graphs, try to comment the line in the main file that forces it to use specific backend `matplotlib.use("Qt5Agg")`.
 
 ### Dependencies
-pip is used to manage dependencies.
+Pip is used to manage dependencies. You can install them using `pip install -r requirements.txt`
 
 ### Configuration
 
-Configuration is done in the file `src/configuration.py`. The parameters can be configured via environment variables.
+Configuration is done using the file `src/configuration.py`.
+The parameters can be configured via environment variables. 
+The available variables can be found inside the file.
 
 
 ### Run the main file
+Execute the following commands from the main folder of the project, where this `README` is located.
 
-`pip install -r requirements.txt`
+First, we need to set the environment variables used for configuration.
+The only required variable is IMAGE_NAME. It is the name of the map image, extension included.
+
+If a variable is not defined, a default value is used, as specified in the `configuration.py` file
 
 ```bash
 export IMAGE_NAME=map6.png

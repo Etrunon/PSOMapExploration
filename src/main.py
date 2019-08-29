@@ -1,5 +1,4 @@
 import logging
-import os
 import time
 from random import Random
 from typing import Dict, Union
@@ -17,7 +16,7 @@ from matplotlib.patches import Circle, Rectangle
 from src.algorithms.algo1 import Algo1
 from src.configuration import CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
     SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, MAX_GENERATIONS, \
-    RESOURCE_RANGE, MAX_EVALUATIONS, RANDOM_SEED
+    RESOURCE_RANGE, MAX_EVALUATIONS, RANDOM_SEED, PARALLELIZE
 from src.custom_pso import log_observer, CustomPSO
 from src.data_structures.Map import Map
 from src.data_structures.Particle import Particle
@@ -26,8 +25,6 @@ logger = logging.getLogger(__name__)
 
 # Set the theme used by matplotlib
 matplotlib.pyplot.style.use("seaborn-bright")
-
-PARALLELIZE = os.environ.get("PARALLELIZE", "false") == "true"
 
 
 def main(rand: Random, min_generations: int, max_generations: int, termination_variance: int, maximum_velocity: int,
@@ -96,7 +93,7 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
     custom_pso.observer = observers
 
     if PARALLELIZE:
-        # Run the PSO algorithm
+        # Run the PSO algorithm using the parallel capabilities of inspyred
         final_population = custom_pso.evolve(generator=algorithm.generate_particle,
                                              evaluator=inspyred.ec.evaluators.parallel_evaluation_mp,
                                              mp_evaluator=custom_pso.evaluate_particles,

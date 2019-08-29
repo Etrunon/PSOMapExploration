@@ -1,17 +1,17 @@
 # BIO-AI course project: Exploring a resource map with a PSO algorithm
 
 ## Project structure
-The repository is divided into three main folders:
-* **data** containing some maps used as examples
-* **factorio** where to put the binary files for the map generator
-* **maps** containing some code experimenting with maps settings and de-encoding of strings used by Factorio map generator
-* **src** containing the main source code of the project
+The repository is divided into four main folders:
+* **data**, containing some maps used as examples
+* **factorio**, where to put the binary files for the map generator
+* **maps**, containing some code experimenting with maps settings and decoding of strings used by Factorio map generator
+* **src**, containing the main source code of the project
 
 
 ## Run the project
 
 The project has been developed using Pycharm IDE. 
-If the project is opened using this IDE, it will automatically pick up the saved run configurations.
+If the project is opened using this IDE, it will automatically include some existing run configurations.
 
 ### Requirements
  - Python 3.6
@@ -20,10 +20,10 @@ It is recommended to use a separate virtualenv for this project.
 The project has been developed and tested on our Linux laptops. 
 Running under other OSes has not been tested.
 
-If matplotlib creates problems while drawing graphs, try commenting the line in the main file that forces it to use specific backend `matplotlib.use("Qt5Agg")`
+If matplotlib creates problems while drawing graphs, try to comment the line in the main file that forces it to use specific backend `matplotlib.use("Qt5Agg")`.
 
 ### Dependencies
-Pip is used to manage dependencies.
+pip is used to manage dependencies.
 
 ### Configuration
 

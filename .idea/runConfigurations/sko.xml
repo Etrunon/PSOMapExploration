@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="sko" type="PythonConfigurationType" factoryName="Python" folderName="sko">
+  <configuration default="false" name="sko" type="PythonConfigurationType" factoryName="Python" folderName="scikit optimizer">
     <module name="Bio-Inspired" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />

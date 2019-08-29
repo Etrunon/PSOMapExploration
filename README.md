@@ -1,4 +1,4 @@
-# Bio-Inspired Artificial Intelligence course project
+# BIO-AI course project: Exploring a resource map with a PSO algorithm
 
 ## Project structure
 The repository is divided into three main folders:
@@ -11,23 +11,23 @@ The repository is divided into three main folders:
 ## Run the project
 
 The project has been developed using Pycharm IDE. 
-If the project is opened using this IDE, it will open automatically pick up the saved run configurations.
+If the project is opened using this IDE, it will automatically pick up the saved run configurations.
 
 ### Requirements
  - Python 3.6
 
 It is recommended to use a separate virtualenv for this project.
-The project has been developed and tested on our Ubuntu laptops. 
+The project has been developed and tested on our Linux laptops. 
 Running under other OSes has not been tested.
 
 If matplotlib creates problems while drawing graphs, try commenting the line in the main file that forces it to use specific backend `matplotlib.use("Qt5Agg")`
 
 ### Dependencies
-Pip is used to manage dependencies
+Pip is used to manage dependencies.
 
 ### Configuration
 
-Configuration is done in the file `src/configuration.py`. The parameters can be configured via environment variables
+Configuration is done in the file `src/configuration.py`. The parameters can be configured via environment variables.
 
 
 ### Run the main file
@@ -44,9 +44,9 @@ python -m src.main
 
 ### Requirements
 
-Factorio headless binary. See https://factorio.com/download-headless
+Factorio headless binary. See https://factorio.com/download-headless.
 
-To generate a new map it's possible to use this command or directly run the bash script 
+To generate a new map use the command below or directly run the bash script 
 **generate.sh** available in the ``maps`` folder:
 
 ```bash
@@ -57,8 +57,8 @@ To generate a new map it's possible to use this command or directly run the bash
 	--map-gen-settings ./maps/bio-map-gen-settings.json
 ```
 
-This will create a new map with as name `map_<current_timestamp>.png` in the `data/example` folder.
+This will create a new map in the `data/example` folder with a name in the format `map_<current_timestamp>.png`.
 
-Parameter `map-preview-scale` manage the scale with 1 meaning 1 meter per pixel.
+Parameter `map-preview-scale` manages the scale (1 means 1 meter per pixel).
 
-Other generation parameters are tunable in the `json` settings file. 
+Other parameters are tunable in the `json` settings file. 

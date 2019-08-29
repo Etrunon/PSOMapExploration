@@ -40,11 +40,18 @@ The only required variable is IMAGE_NAME. It is the name of the map image, exten
 
 If a variable is not defined, a default value is used, as specified in the `configuration.py` file
 
+The seed (if not specified using env variable SEED) is taken as the current timestamp.
+
 ```bash
 export IMAGE_NAME=map6.png
 
 python -m src.main
 ```
+
+
+### Benchamrks
+
+The benchmarks have been conducted on the map `map6-cropped1.png`
 
 ## Map generation
 

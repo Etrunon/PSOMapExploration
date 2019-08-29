@@ -8,6 +8,10 @@ from joblib import Parallel, delayed
 from src import main
 from src.configuration import MIN_GENERATIONS
 
+############################
+# Create a CSV files with performance results of a lot of runs fo the algorithm on the same map
+############################
+
 RUNS = int(os.environ.get("RUNS", 500))
 PARALLEL_COUNT = multiprocessing.cpu_count()
 

@@ -17,9 +17,9 @@ from src.algorithms.algo1 import Algo1
 from src.configuration import CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
     SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, MAX_GENERATIONS, \
     RESOURCE_RANGE, MAX_EVALUATIONS, RANDOM_SEED, PARALLELIZE
-from src.custom_pso import log_observer, CustomPSO
 from src.data_structures.Map import Map
 from src.data_structures.Particle import Particle
+from src.data_structures.custom_pso import log_observer, CustomPSO
 
 logger = logging.getLogger(__name__)
 

@@ -6,7 +6,7 @@ from typing import List
 from joblib import Parallel, delayed
 
 from src import main
-from src.configuration import MIN_GENERATIONS
+from src.configuration import MIN_GENERATIONS, CITY_POSITION, CSV_FILE
 
 ############################
 # Create a CSV files with performance results of a lot of runs fo the algorithm on the same map
@@ -35,16 +35,28 @@ if __name__ == '__main__':
         particle = result['particle']
 
         results.append(
-            {'duration': result['duration'],
-             'evaluations': result['evaluations'],
-             'generations': result['generations'],
-             'fitness': particle.best_fitness,
-             'position_x': particle.best_position[0],
-             'position_y': particle.best_position[1]}
+            {
+                'duration': result['duration'],
+                'evaluations': result['evaluations'],
+                'generations': result['generations'],
+                'fitness': particle.best_fitness,
+                'position_x': particle.best_position[0],
+                'position_y': particle.best_position[1],
+                'city_position_x': CITY_POSITION[0],
+                'city_position_y': CITY_POSITION[1]
+            }
         )
 
-    fields = ['duration', 'evaluations', 'generations', 'fitness', 'position_x', 'position_y']
-    with open('data/evaluations.csv', 'w', newline='') as csvfile:
+    fields = ['duration',
+              'evaluations',
+              'generations',
+              'fitness',
+              'position_x',
+              'position_y',
+              'city_position_x',
+              'city_position_y']
+
+    with open(CSV_FILE, 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, delimiter=',', fieldnames=fields)
         writer.writeheader()
         writer.writerows(results)

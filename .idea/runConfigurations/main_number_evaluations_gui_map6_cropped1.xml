@@ -1,13 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="main map6" type="PythonConfigurationType" factoryName="Python" folderName="main">
+  <configuration default="false" name="main_number_evaluations_gui map6-cropped1" type="PythonConfigurationType" factoryName="Python">
     <module name="Bio-Inspired" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
-      <env name="IMAGE_NAME" value="map6.png" />
-      <env name="CITY_POSITION_X" value="568" />
-      <env name="CITY_POSITION_Y" value="810" />
+      <env name="IMAGE_NAME" value="map6-cropped1.png" />
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -15,10 +13,10 @@
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main_number_evaluations_gui.py" />
     <option name="PARAMETERS" value="" />
     <option name="SHOW_COMMAND_LINE" value="false" />
-    <option name="EMULATE_TERMINAL" value="true" />
+    <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />
     <option name="REDIRECT_INPUT" value="false" />
     <option name="INPUT_FILE" value="" />

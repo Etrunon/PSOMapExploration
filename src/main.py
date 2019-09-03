@@ -16,7 +16,7 @@ from matplotlib.patches import Circle, Rectangle
 from src.algorithms.algo1 import Algo1
 from src.configuration import CITY_POSITION, POPULATION_SIZE, COGNITIVE_RATE, INERTIA_RATE, \
     SOCIAL_RATE, IMAGE_NAME, SHOW_GUI, MIN_GENERATIONS, TERMINATION_VARIANCE, MAXIMUM_VELOCITY, MAX_GENERATIONS, \
-    RESOURCE_RANGE, MAX_EVALUATIONS, RANDOM_SEED, PARALLELIZE
+    RESOURCE_RANGE, MAX_EVALUATIONS, RANDOM_SEED, PARALLELIZE, CALCULATE_FITNESS_MANUALLY
 from src.data_structures.Map import Map
 from src.data_structures.Particle import Particle
 from src.data_structures.custom_pso import log_observer, CustomPSO
@@ -169,11 +169,36 @@ def main(rand: Random, min_generations: int, max_generations: int, termination_v
                       scale=10,
                       width=0.005,
                       color=plot[0].get_color(),
-                      alpha=0.3)
+                      alpha=1)
 
         ax.legend(bbox_to_anchor=(1, 1), loc='upper left', markerscale=10)
 
         figManager = figure.canvas.manager.window.showMaximized()
+
+        if CALCULATE_FITNESS_MANUALLY:
+            ##############################################################
+            # Calculate the best position manually, to show the difference with the result of PSO
+
+            logger.info("Calculating fitness on the whole map")
+            landscape = algorithm.get_fitness_landscape()
+            # Print the best fitness location and value
+            minimum = np.amin(landscape)
+            minimum_positions = np.where(landscape == minimum)
+            minimum_position = minimum_positions[0][0], minimum_positions[1][0]
+
+            logger.info("Best fitness is %s at %d %d", minimum, minimum_position[0], minimum_position[1])
+            # Plot the best position as a white circle
+            minimum_position_circle = Circle(minimum_position, facecolor="purple", alpha=0.6)
+            ax.add_patch(minimum_position_circle)
+
+            ax.annotate(
+                'best position {0:.0f}'.format(minimum),
+                xy=minimum_position,
+                xytext=(position + 40 for position in minimum_position),
+                arrowprops=dict(arrowstyle='->', color="white"),
+                color="white"
+            )
+            ##############################################################
 
         matplotlib.pyplot.show(block=True)
 

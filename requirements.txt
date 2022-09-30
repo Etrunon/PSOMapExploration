@@ -4,7 +4,7 @@ decorator==4.4.0
 humanfriendly==4.18
 imageio==2.5.0
 inspyred==1.0.1
-joblib==0.13.2
+joblib==1.2.0
 kiwisolver==1.0.1
 matplotlib==3.0.3
 networkx==2.2
